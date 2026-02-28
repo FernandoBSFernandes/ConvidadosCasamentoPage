@@ -39,7 +39,7 @@ $(document).ready(function() {
             $companionSection.addClass('d-none').removeClass('show');
             $companionCheckboxes.prop('required', false).prop('checked', false);
             $companionDetailsSection.addClass('d-none');
-            $companionCount.val('0');
+            $companionCount.val('');
             $companionNamesContainer.empty().addClass('d-none');
             $companionError.removeClass('show');
             $companionCountError.removeClass('show');
@@ -64,6 +64,12 @@ $(document).ready(function() {
         }
     }
 
+    // Array com números ordinais em português
+    function getOrdinal(num) {
+        const ordinais = ['1º', '2º', '3º', '4º', '5º', '6º', '7º', '8º', '9º', '10º'];
+        return ordinais[num - 1] || num;
+    }
+
     // Gerar campos de texto para nomes de acompanhantes
     function generateCompanionNameFields() {
         const count = parseInt($companionCount.val()) || 0;
@@ -72,9 +78,10 @@ $(document).ready(function() {
             $companionNamesContainer.empty();
             
             for (let i = 1; i <= count; i++) {
+                const ordinal = getOrdinal(i);
                 const inputGroup = `
                     <div class="companion-input-group">
-                        <label for="companionName${i}">Acompanhante ${i}</label>
+                        <label for="companionName${i}">Insira o nome do ${ordinal} acompanhante</label>
                         <input type="text" class="form-control companion-name-input" 
                                id="companionName${i}" 
                                name="companionName${i}" 
@@ -90,7 +97,7 @@ $(document).ready(function() {
             $companionCountError.removeClass('show');
         } else if (count === 0 && $companionCount.val() === '0') {
             // Se o usuário digitou explicitamente 0
-            $companionCountError.text('Por favor, informe uma quantidade a partir de 1 ou escolha "Vou sozinho(a)".');
+            $companionCountError.text('Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.');
             $companionCountError.addClass('show');
             $companionNamesContainer.empty().addClass('d-none');
         } else {
@@ -156,22 +163,19 @@ $(document).ready(function() {
 
         // Validação: se acompanhado, precisa preencher quantidade
         if (companion === 'acompanhado' && companionCount === 0) {
-            $companionCountError.text('Por favor, informe uma quantidade a partir de 1 ou escolha "Vou sozinho(a)".');
+            $companionCountError.text('Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.');
             $companionCountError.addClass('show');
             isValid = false;
         }
 
         // Validação: se acompanhado, todos os nomes devem estar preenchidos
         if (companion === 'acompanhado' && companionCount > 0) {
-            let allNamesFilled = true;
-            $('.companion-name-input').each(function() {
-                if (!$(this).val().trim()) {
-                    allNamesFilled = false;
-                    return false;
-                }
+            $companionNamesContainer = $('#containerNomesAcompanhantes');
+            const emptyInputs = $companionNamesContainer.find('.companion-name-input').filter(function() {
+                return !$(this).val().trim();
             });
-
-            if (!allNamesFilled) {
+            
+            if (emptyInputs.length > 0) {
                 $companionNamesError.addClass('show');
                 isValid = false;
             }
@@ -192,7 +196,7 @@ $(document).ready(function() {
 
         // Adicionar nomes dos acompanhantes
         if (companion === 'acompanhado') {
-            $('.companion-name-input').each(function() {
+            $('#containerNomesAcompanhantes .companion-name-input').each(function() {
                 const companionName = $(this).val().trim();
                 if (companionName) {
                     dadosFormulario.nomesAcompanhantes.push(companionName);
@@ -229,7 +233,7 @@ $(document).ready(function() {
                         summaryHTML += `<p class="mb-2"><strong>Quantidade de acompanhantes:</strong> ${companionCount}</p>`;
                         summaryHTML += `<p class="mb-0"><strong>Nomes dos acompanhantes:</strong></p><ul class="mt-2">`;
                         
-                        $('.companion-name-input').each(function() {
+                        $('#containerNomesAcompanhantes .companion-name-input').each(function() {
                             const companionName = $(this).val().trim();
                             if (companionName) {
                                 summaryHTML += `<li>${escapeHtml(companionName)}</li>`;
