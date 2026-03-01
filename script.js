@@ -122,7 +122,7 @@ $(document).ready(function() {
         
         if (nome.length > 0) {
             $.ajax({
-                url: 'https://localhost:5000/api/Convidado/verificar?nome=' + encodeURIComponent(nome),
+                url: 'https://eventos-hmlo.onrender.com/api/Convidado/verificar?nome=' + encodeURIComponent(nome),
                 type: 'GET',
                 success: function(response) {
                     if (response && response.existe) {
@@ -228,7 +228,7 @@ $(document).ready(function() {
 
         // Enviar para API
         $.ajax({
-            url: 'https://localhost:5000/api/Convidado/adicionar',
+            url: 'https://eventos-hmlo.onrender.com/api/Convidado/adicionar',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(dadosFormulario),
