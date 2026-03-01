@@ -74,6 +74,18 @@ $(document).ready(function() {
         return ordinals[num - 1] || num;
     }
 
+    // Função para escapar caracteres HTML
+    function escapeHtml(text) {
+        const map = {
+            "&": "&amp;",
+            "<": "&lt;",
+            ">": "&gt;",
+            '"': "&quot;",
+            "'": "&#039;"
+        };
+        return text.replace(/[&<>"']/g, char => map[char]);
+    }
+
     // Função para gerar campos de nomes dos acompanhantes
     function generateCompanionNameFields() {
         const quantity = parseInt($inputQuantidadeAcompanhantes.val()) || 0;
@@ -110,26 +122,23 @@ $(document).ready(function() {
         
         if (nome.length > 0) {
             $.ajax({
-                url: 'https://localhost:5000/api/Convidado/verificar',
-                type: 'POST',
-                contentType: 'application/json',
-                data: JSON.stringify({ nome: nome }),
+                url: 'https://localhost:5000/api/Convidado/verificar?nome=' + encodeURIComponent(nome),
+                type: 'GET',
                 success: function(response) {
                     if (response && response.existe) {
                         const modal = new bootstrap.Modal(document.getElementById('modalNomeRegistrado'));
                         modal.show();
-                        $erroNome.addClass("show");
+                        $inputNome.attr('data-duplicado', 'true');
                     } else {
-                        $erroNome.removeClass("show");
+                        $inputNome.removeAttr('data-duplicado');
                     }
                 },
                 error: function(xhr, status, error) {
-                    // Em caso de erro, não mostrar mensagem de erro
-                    $erroNome.removeClass("show");
+                    $inputNome.removeAttr('data-duplicado');
                 }
             });
         } else {
-            $erroNome.removeClass("show");
+            $inputNome.removeAttr('data-duplicado');
         }
     });
 
@@ -194,6 +203,11 @@ $(document).ready(function() {
 
         if (!isValid) return;
 
+        // Verificar se o nome é duplicado
+        if ($inputNome.attr('data-duplicado') === 'true') {
+            return;
+        }
+
         // Preparar dados
         const dadosFormulario = {
             nome: nome.trim(),
@@ -212,11 +226,6 @@ $(document).ready(function() {
             });
         }
 
-        // Verificar se há erro de nome (já foi verificado enquanto digitava)
-        if ($erroNome.hasClass("show")) {
-            return;
-        }
-
         // Enviar para API
         $.ajax({
             url: 'https://localhost:5000/api/Convidado/adicionar',
@@ -228,10 +237,10 @@ $(document).ready(function() {
             },
             error: function(xhr, status, error) {
                 console.error('Erro ao enviar formulário:', error);
-                // Mesmo com erro, mostrar o resumo
                 exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, null);
             }
         });
+    });
 
     // Função para exibir resumo
     function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response) {
