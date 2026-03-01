@@ -263,7 +263,6 @@ $(document).ready(function() {
                 }
             }
         }
-        }
 
         let mensagemErroServidor = "";
         if (response && typeof response.mensagem === 'string') {
