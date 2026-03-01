@@ -1,6 +1,7 @@
 $(document).ready(function() {
     // Cache de elementos
     const $form = $("#formularioEvento");
+    const $btnSubmit = $('button[type="submit"]');
     const $radioPresenca = $('input[name="iraAoEvento"]');
     const $secaoParticipacao = $("#secaoParticipacao");
     const $checkboxParticipacao = $('input[name="tipoDeParticipacao"]');
@@ -161,6 +162,7 @@ $(document).ready(function() {
     $form.on("submit", function(e) {
         e.preventDefault();
         limparErros();
+        $btnSubmit.prop("disabled", true);
 
         const nome = $inputNome.val();
         const iraAoEvento = $('input[name="iraAoEvento"]:checked').val();
@@ -245,6 +247,7 @@ $(document).ready(function() {
 
     // Função para exibir resumo
     function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response) {
+        $btnSubmit.prop("disabled", false);
         let temErro = response && response.codigoStatus && response.codigoStatus >= 400;
         
         if (temErro) {
