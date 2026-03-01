@@ -245,31 +245,38 @@ $(document).ready(function() {
 
     // Função para exibir resumo
     function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response) {
+        let temErro = response && response.codigoStatus;
+        
+        if (temErro) {
+            // Se há erro, mostra apenas a mensagem de erro
+            let mensagemErro = "";
+            if (response && typeof response.mensagem === 'string') {
+                mensagemErro = `<div class="alert alert-danger" role="alert">${escapeHtml(response.mensagem)}</div>`;
+            } else {
+                mensagemErro = `<div class="alert alert-danger" role="alert">Erro ao processar o formulário.</div>`;
+            }
+            $resumoFormulario.html(mensagemErro).removeClass("d-none");
+            return;
+        }
+        
+        // Se não há erro, mostra mensagem de sucesso e dados
         $mensagemSucesso.removeClass("d-none").addClass("show");
 
         let resumoHTML = `<div class="card-body"><p class="mb-2"><strong>Nome:</strong> ${escapeHtml(nome)}</p><p class="mb-2"><strong>Irá ao evento:</strong> ${iraAoEvento === "sim" ? "Sim" : "Não"}</p>`;
 
         let mensagemPersonalizada = "";
-        let temErro = response && response.codigoStatus;
         
-        if (!temErro) {
-            if (iraAoEvento === "não") {
-                mensagemPersonalizada = `<div class="alert alert-warning mt-4 mb-0" role="alert">😢 Ficaremos triste com a sua não presença. Lamentamos, mas entendemos a sua ausência!</div>`;
-            } else if (iraAoEvento === "sim") {
-                if (tipoParticipacaoValue === "acompanhado") {
-                    mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso! Estaremos também aguardando os seus acompanhantes!</div>`;
-                } else {
-                    mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso!</div>`;
-                }
+        if (iraAoEvento === "não") {
+            mensagemPersonalizada = `<div class="alert alert-warning mt-4 mb-0" role="alert">😢 Ficaremos triste com a sua não presença. Lamentamos, mas entendemos a sua ausência!</div>`;
+        } else if (iraAoEvento === "sim") {
+            if (tipoParticipacaoValue === "acompanhado") {
+                mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso! Estaremos também aguardando os seus acompanhantes!</div>`;
+            } else {
+                mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso!</div>`;
             }
         }
 
-        let mensagemErroServidor = "";
-        if (response && typeof response.mensagem === 'string') {
-            mensagemErroServidor = `<div class="alert alert-danger mt-3" role="alert">${escapeHtml(response.mensagem)}</div>`;
-        }
-
-        if (!temErro && iraAoEvento === "sim") {
+        if (iraAoEvento === "sim") {
             const tipoParticipacao = tipoParticipacaoValue === "sozinho" ? "Sozinho(a)" : tipoParticipacaoValue === "acompanhado" ? "Acompanhado(a)" : "-";
             resumoHTML += `<p class="mb-2"><strong>Forma de participação:</strong> ${tipoParticipacao}</p>`;
 
@@ -287,35 +294,32 @@ $(document).ready(function() {
 
         resumoHTML += `</div>`;
         resumoHTML += mensagemPersonalizada;
-        resumoHTML += mensagemErroServidor;
         
-        // Adicionar botão de download do calendário se foi para o evento e sem erro
-        if (!temErro && iraAoEvento === "sim") {
+        // Adicionar botão de download do calendário se foi para o evento
+        if (iraAoEvento === "sim") {
             resumoHTML += `<div class="mt-4 text-center"><a href="#" class="btn btn-outline-primary btn-sm" id="btnBaixarCalendario">📅 Adicionar ao Calendário</a></div>`;
         }
         
         $resumoFormulario.html(resumoHTML).removeClass("d-none");
         
-        // Adicionar evento ao botão de download (só existe se não há erro)
-        if (!temErro && $("#btnBaixarCalendario").length) {
+        // Adicionar evento ao botão de download
+        if ($("#btnBaixarCalendario").length) {
             $("#btnBaixarCalendario").on("click", function(e) {
                 e.preventDefault();
                 gerarArquivoIcs();
             });
         }
 
-        // Só limpar o formulário se foi sucesso (sem erro)
-        if (!temErro) {
-            setTimeout(() => {
-                $form[0].reset();
-                $secaoParticipacao.addClass("d-none").removeClass("show");
-                $mensagemSucesso.addClass("d-none").removeClass("show");
-                $resumoFormulario.addClass("d-none");
-                $secaoDetalhesAcompanhamento.addClass("d-none");
-                $containerNomesAcompanhantes.empty().addClass("d-none");
-                limparErros();
-            }, 2000);
-        }
+        // Limpar o formulário após sucesso
+        setTimeout(() => {
+            $form[0].reset();
+            $secaoParticipacao.addClass("d-none").removeClass("show");
+            $mensagemSucesso.addClass("d-none").removeClass("show");
+            $resumoFormulario.addClass("d-none");
+            $secaoDetalhesAcompanhamento.addClass("d-none");
+            $containerNomesAcompanhantes.empty().addClass("d-none");
+            limparErros();
+        }, 2000);
     }
 
     // Função para gerar arquivo .ics (calendário)
