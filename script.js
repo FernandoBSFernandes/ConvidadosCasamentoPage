@@ -245,7 +245,7 @@ $(document).ready(function() {
 
     // Função para exibir resumo
     function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response) {
-        let temErro = response && response.codigoStatus;
+        let temErro = response && response.codigoStatus && response.codigoStatus >= 400;
         
         if (temErro) {
             // Se há erro, mostra apenas a mensagem de erro
