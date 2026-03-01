@@ -314,7 +314,6 @@ $(document).ready(function() {
         setTimeout(() => {
             $form[0].reset();
             $secaoParticipacao.addClass("d-none").removeClass("show");
-            $mensagemSucesso.addClass("d-none").removeClass("show");
             $resumoFormulario.addClass("d-none");
             $secaoDetalhesAcompanhamento.addClass("d-none");
             $containerNomesAcompanhantes.empty().addClass("d-none");
