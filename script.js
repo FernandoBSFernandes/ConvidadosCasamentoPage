@@ -104,6 +104,35 @@ $(document).ready(function() {
     // Eventos
     $inputNome.on("keypress", preventNumbers);
 
+    // Verificar se o convidado já existe quando sair do campo de nome
+    $inputNome.on("blur", function() {
+        const nome = $(this).val().trim();
+        
+        if (nome.length > 0) {
+            $.ajax({
+                url: 'https://localhost:5000/api/Convidado/verificar',
+                type: 'POST',
+                contentType: 'application/json',
+                data: JSON.stringify({ nome: nome }),
+                success: function(response) {
+                    if (response && response.existe) {
+                        const modal = new bootstrap.Modal(document.getElementById('modalNomeRegistrado'));
+                        modal.show();
+                        $erroNome.addClass("show");
+                    } else {
+                        $erroNome.removeClass("show");
+                    }
+                },
+                error: function(xhr, status, error) {
+                    // Em caso de erro, não mostrar mensagem de erro
+                    $erroNome.removeClass("show");
+                }
+            });
+        } else {
+            $erroNome.removeClass("show");
+        }
+    });
+
     $radioPresenca.on("change", function() {
         toggleCompanionSection();
         limparErros();
@@ -183,6 +212,11 @@ $(document).ready(function() {
             });
         }
 
+        // Verificar se há erro de nome (já foi verificado enquanto digitava)
+        if ($erroNome.hasClass("show")) {
+            return;
+        }
+
         // Enviar para API
         $.ajax({
             url: 'https://localhost:5000/api/Convidado/adicionar',
@@ -190,21 +224,36 @@ $(document).ready(function() {
             contentType: 'application/json',
             data: JSON.stringify(dadosFormulario),
             success: function(response) {
-                exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes);
+                exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response);
             },
             error: function(xhr, status, error) {
                 console.error('Erro ao enviar formulário:', error);
                 // Mesmo com erro, mostrar o resumo
-                exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes);
+                exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, null);
             }
         });
-    });
 
     // Função para exibir resumo
-    function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes) {
+    function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response) {
         $mensagemSucesso.removeClass("d-none").addClass("show");
 
         let resumoHTML = `<div class="card-body"><p class="mb-2"><strong>Nome:</strong> ${escapeHtml(nome)}</p><p class="mb-2"><strong>Irá ao evento:</strong> ${iraAoEvento === "sim" ? "Sim" : "Não"}</p>`;
+
+        let mensagemPersonalizada = "";
+        if (iraAoEvento === "não") {
+            mensagemPersonalizada = `<div class="alert alert-warning mt-4 mb-0" role="alert">😢 Ficaremos triste com a sua não presença. Lamentamos, mas entendemos a sua ausência!</div>`;
+        } else if (iraAoEvento === "sim") {
+            if (tipoParticipacaoValue === "acompanhado") {
+                mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso! Estaremos também aguardando os seus acompanhantes!</div>`;
+            } else {
+                mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso!</div>`;
+            }
+        }
+
+        let mensagemErroServidor = "";
+        if (response && response.mensagem) {
+            mensagemErroServidor = `<div class="alert alert-danger mt-3" role="alert">${escapeHtml(response.mensagem)}</div>`;
+        }
 
         if (iraAoEvento === "sim") {
             const tipoParticipacao = tipoParticipacaoValue === "sozinho" ? "Sozinho(a)" : tipoParticipacaoValue === "acompanhado" ? "Acompanhado(a)" : "-";
@@ -223,7 +272,21 @@ $(document).ready(function() {
         }
 
         resumoHTML += `</div>`;
+        resumoHTML += mensagemPersonalizada;
+        resumoHTML += mensagemErroServidor;
+        
+        // Adicionar botão de download do calendário se foi para o evento
+        if (iraAoEvento === "sim") {
+            resumoHTML += `<div class="mt-4 text-center"><a href="#" class="btn btn-outline-primary btn-sm" id="btnBaixarCalendario">📅 Adicionar ao Calendário</a></div>`;
+        }
+        
         $resumoFormulario.html(resumoHTML).removeClass("d-none");
+        
+        // Adicionar evento ao botão de download
+        $("#btnBaixarCalendario").on("click", function(e) {
+            e.preventDefault();
+            gerarArquivoIcs();
+        });
 
         setTimeout(() => {
             $form[0].reset();
@@ -236,16 +299,40 @@ $(document).ready(function() {
         }, 2000);
     }
 
-    // Função para escapar HTML
-    function escapeHtml(text) {
-        const htmlEscapeMap = {
-            '&': '&amp;',
-            '<': '&lt;',
-            '>': '&gt;',
-            '"': '&quot;',
-            "'": '&#039;'
-        };
-        return text.replace(/[&<>"']/g, char => htmlEscapeMap[char]);
+    // Função para gerar arquivo .ics (calendário)
+    function gerarArquivoIcs() {
+        // Data do evento: 25 de abril de 2026, 19:00 às 23:00
+        const dataInicio = "20260425T190000"; // Data em formato iCalendar
+        const dataFim = "20260425T230000";
+        const dataAtual = new Date().toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
+        
+        const ics = `BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Casamento Suzana e Fernando//PT
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+DTSTART:${dataInicio}
+DTEND:${dataFim}
+DTSTAMP:${dataAtual}
+UID:casamento-suzana-fernando@example.com
+CREATED:${dataAtual}
+DESCRIPTION:Recepção de Casamento de Suzana e Fernando\nLocal: Restaurante Picanha do Delei\nRua João Cândido, 81 - Posse, Nova Iguaçu\nRodízio de pizzas e massas - R$ 75,00 (adultos)\nInformações: https://www.instagram.com/picanhadodelei/
+LAST-MODIFIED:${dataAtual}
+LOCATION:Restaurante Picanha do Delei, Rua João Cândido, 81 - Posse, Nova Iguaçu
+SEQUENCE:0
+STATUS:CONFIRMED
+SUMMARY:Recepção de Casamento - Suzana e Fernando
+END:VEVENT
+END:VCALENDAR`;
+        
+        // Criar blob e link de download
+        const element = document.createElement("a");
+        element.setAttribute("href", "data:text/calendar;charset=utf-8," + encodeURIComponent(ics));
+        element.setAttribute("download", "casamento-suzana-fernando.ics");
+        element.style.display = "none";
+        document.body.appendChild(element);
+        element.click();
+        document.body.removeChild(element);
     }
 
     // Evento de reset
