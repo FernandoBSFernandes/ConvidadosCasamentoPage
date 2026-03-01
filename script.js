@@ -211,9 +211,9 @@ $(document).ready(function() {
         // Preparar dados
         const dadosFormulario = {
             nome: nome.trim(),
-            iraAoEvento: iraAoEvento === "sim",
-            tipoDeParticipacao: tipoParticipacaoValue === "sozinho" ? "Sozinho" : tipoParticipacaoValue === "acompanhado" ? "Acompanhado" : "-",
-            quantidadeDeAcompanhantes: tipoParticipacaoValue === "acompanhado" ? quantidadeAcompanhantes : 0,
+            iraAoRodizio: iraAoEvento === "sim",
+            participacao: tipoParticipacaoValue === "sozinho" ? "Sozinho" : tipoParticipacaoValue === "acompanhado" ? "Acompanhado" : "-",
+            quantidadeAcompanhantes: tipoParticipacaoValue === "acompanhado" ? quantidadeAcompanhantes : 0,
             nomesAcompanhantes: []
         };
 
