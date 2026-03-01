@@ -153,7 +153,7 @@ $(document).ready(function() {
         $erroTipoParticipacao.removeClass("show");
     });
 
-    $inputQuantidadeAcompanhantes.on("change", function() {
+    $inputQuantidadeAcompanhantes.on("change input", function() {
         generateCompanionNameFields();
     });
 
