@@ -1,295 +1,264 @@
 $(document).ready(function() {
-    const $form = $('#formularioEvento');
-    const $attendingRadios = $('input[name="iraAoEvento"]');
-    const $companionSection = $('#secaoParticipacao');
-    const $companionCheckboxes = $('input[name="tipoDeParticipacao"]');
-    const $successMessage = $('#mensagemSucesso');
-    const $formSummary = $('#resumoFormulario');
-    const $nameInput = $('#inputNome');
-    const $aloneCheckbox = $('#checkboxSozinho');
-    const $accompaniedCheckbox = $('#checkboxAcompanhado');
-    const $companionDetailsSection = $('#secaoDetalhesAcompanhamento');
-    const $companionCount = $('#inputQuantidadeAcompanhantes');
-    const $companionNamesContainer = $('#containerNomesAcompanhantes');
-    
-    // Mensagens de erro
-    const $nameError = $('#erroNome');
-    const $attendingError = $('#erroIraAoEvento');
-    const $companionError = $('#erroTipoParticipacao');
-    const $companionCountError = $('#erroQuantidadeAcompanhantes');
-    const $companionNamesError = $('#erroNomesAcompanhantes');
+    // Cache de elementos
+    const $form = $("#formularioEvento");
+    const $radioPresenca = $('input[name="iraAoEvento"]');
+    const $secaoParticipacao = $("#secaoParticipacao");
+    const $checkboxParticipacao = $('input[name="tipoDeParticipacao"]');
+    const $mensagemSucesso = $("#mensagemSucesso");
+    const $resumoFormulario = $("#resumoFormulario");
+    const $inputNome = $("#inputNome");
+    const $checkboxSozinho = $("#checkboxSozinho");
+    const $checkboxAcompanhado = $("#checkboxAcompanhado");
+    const $secaoDetalhesAcompanhamento = $("#secaoDetalhesAcompanhamento");
+    const $inputQuantidadeAcompanhantes = $("#inputQuantidadeAcompanhantes");
+    const $containerNomesAcompanhantes = $("#containerNomesAcompanhantes");
+    const $erroNome = $("#erroNome");
+    const $erroIraAoEvento = $("#erroIraAoEvento");
+    const $erroTipoParticipacao = $("#erroTipoParticipacao");
+    const $erroQuantidadeAcompanhantes = $("#erroQuantidadeAcompanhantes");
+    const $erroNomesAcompanhantes = $("#erroNomesAcompanhantes");
 
-    // Limpar mensagens de erro
-    function clearErrors() {
-        $nameError.removeClass('show');
-        $attendingError.removeClass('show');
-        $companionError.removeClass('show');
-        $companionCountError.removeClass('show');
-        $companionNamesError.removeClass('show');
+    // Função para limpar erros
+    function limparErros() {
+        $erroNome.removeClass("show");
+        $erroIraAoEvento.removeClass("show");
+        $erroTipoParticipacao.removeClass("show");
+        $erroQuantidadeAcompanhantes.removeClass("show");
+        $erroNomesAcompanhantes.removeClass("show");
     }
 
-    // Mostrar/ocultar seção condicional baseado na resposta
+    // Função para prevenir números em campos de texto
+    function preventNumbers(event) {
+        const char = String.fromCharCode(event.which);
+        if (/[0-9]/.test(char)) {
+            event.preventDefault();
+        }
+    }
+
+    // Função para alternar seção de participação
     function toggleCompanionSection() {
-        const isAttending = $('#radioSimIrei').is(':checked');
-        
-        if (isAttending) {
-            $companionSection.removeClass('d-none').addClass('show');
-            $companionCheckboxes.prop('required', true);
+        const isChecked = $("#radioSimIrei").is(":checked");
+        if (isChecked) {
+            $secaoParticipacao.removeClass("d-none").addClass("show");
+            $checkboxParticipacao.prop("required", true);
         } else {
-            $companionSection.addClass('d-none').removeClass('show');
-            $companionCheckboxes.prop('required', false).prop('checked', false);
-            $companionDetailsSection.addClass('d-none');
-            $companionCount.val('');
-            $companionNamesContainer.empty().addClass('d-none');
-            $companionError.removeClass('show');
-            $companionCountError.removeClass('show');
-            $companionNamesError.removeClass('show');
+            $secaoParticipacao.addClass("d-none").removeClass("show");
+            $checkboxParticipacao.prop("required", false).prop("checked", false);
+            $secaoDetalhesAcompanhamento.addClass("d-none");
+            $inputQuantidadeAcompanhantes.val("");
+            $containerNomesAcompanhantes.empty().addClass("d-none");
+            $erroTipoParticipacao.removeClass("show");
+            $erroQuantidadeAcompanhantes.removeClass("show");
+            $erroNomesAcompanhantes.removeClass("show");
         }
     }
 
-    // Mostrar/ocultar detalhes de acompanhantes
+    // Função para alternar detalhes de acompanhamento
     function toggleCompanionDetails() {
-        const isAccompanied = $accompaniedCheckbox.is(':checked');
-        
-        if (isAccompanied) {
-            $companionDetailsSection.removeClass('d-none');
-            $companionCount.prop('required', true).val('');
-            $companionNamesContainer.empty().addClass('d-none');
+        const isChecked = $checkboxAcompanhado.is(":checked");
+        if (isChecked) {
+            $secaoDetalhesAcompanhamento.removeClass("d-none");
+            $inputQuantidadeAcompanhantes.prop("required", true).val("");
         } else {
-            $companionDetailsSection.addClass('d-none');
-            $companionCount.prop('required', false).val('');
-            $companionNamesContainer.empty().addClass('d-none');
-            $companionCountError.removeClass('show');
-            $companionNamesError.removeClass('show');
+            $secaoDetalhesAcompanhamento.addClass("d-none");
+            $inputQuantidadeAcompanhantes.prop("required", false).val("");
+            $containerNomesAcompanhantes.empty().addClass("d-none");
+            $erroQuantidadeAcompanhantes.removeClass("show");
+            $erroNomesAcompanhantes.removeClass("show");
         }
     }
 
-    // Array com números ordinais em português
+    // Função para obter ordinal
     function getOrdinal(num) {
-        const ordinais = ['1º', '2º', '3º', '4º', '5º', '6º', '7º', '8º', '9º', '10º'];
-        return ordinais[num - 1] || num;
+        const ordinals = ["1º", "2º", "3º", "4º", "5º", "6º", "7º", "8º", "9º", "10º"];
+        return ordinals[num - 1] || num;
     }
 
-    // Gerar campos de texto para nomes de acompanhantes
+    // Função para gerar campos de nomes dos acompanhantes
     function generateCompanionNameFields() {
-        const count = parseInt($companionCount.val()) || 0;
-        
-        if (count > 0 && count <= 10) {
-            $companionNamesContainer.empty();
-            
-            for (let i = 1; i <= count; i++) {
+        const quantity = parseInt($inputQuantidadeAcompanhantes.val()) || 0;
+
+        if (quantity > 0 && quantity <= 10) {
+            $containerNomesAcompanhantes.empty();
+            for (let i = 1; i <= quantity; i++) {
                 const ordinal = getOrdinal(i);
-                const inputGroup = `
-                    <div class="companion-input-group">
+                $containerNomesAcompanhantes.append(
+                    `<div class="companion-input-group">
                         <label for="companionName${i}">Insira o nome do ${ordinal} acompanhante</label>
-                        <input type="text" class="form-control companion-name-input" 
-                               id="companionName${i}" 
-                               name="companionName${i}" 
-                               placeholder="Digite o nome do acompanhante" 
-                               maxlength="50"
-                               required>
-                    </div>
-                `;
-                $companionNamesContainer.append(inputGroup);
+                        <input type="text" class="form-control companion-name-input" id="companionName${i}" name="companionName${i}" placeholder="Digite o nome do acompanhante" maxlength="50" required>
+                    </div>`
+                );
+                $("#companionName" + i).on("keypress", preventNumbers);
             }
-            
-            $companionNamesContainer.removeClass('d-none');
-            $companionCountError.removeClass('show');
-        } else if (count === 0 && $companionCount.val() === '0') {
-            // Se o usuário digitou explicitamente 0
-            $companionCountError.text('Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.');
-            $companionCountError.addClass('show');
-            $companionNamesContainer.empty().addClass('d-none');
+            $containerNomesAcompanhantes.removeClass("d-none");
+            $erroQuantidadeAcompanhantes.removeClass("show");
+        } else if (quantity === 0 && $inputQuantidadeAcompanhantes.val() === "0") {
+            $erroQuantidadeAcompanhantes.text("Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.").addClass("show");
+            $containerNomesAcompanhantes.empty().addClass("d-none");
         } else {
-            $companionNamesContainer.empty().addClass('d-none');
-            $companionCountError.removeClass('show');
+            $containerNomesAcompanhantes.empty().addClass("d-none");
+            $erroQuantidadeAcompanhantes.removeClass("show");
         }
     }
 
-    // Listeners para os radiobuttons
-    $attendingRadios.on('change', function() {
+    // Eventos
+    $inputNome.on("keypress", preventNumbers);
+
+    $radioPresenca.on("change", function() {
         toggleCompanionSection();
-        clearErrors();
+        limparErros();
     });
 
-    // Listeners para os checkboxes de acompanhamento
-    $companionCheckboxes.on('change', function() {
-        if ($(this).is(':checked')) {
-            $companionCheckboxes.not(this).prop('checked', false);
-        }
-        // Aguardar um tick para garantir que a desmarcação foi processada
-        setTimeout(function() {
-            toggleCompanionDetails();
-            $companionError.removeClass('show');
-        }, 0);
+    $checkboxParticipacao.on("change", function() {
+        $(this).is(":checked") && $checkboxParticipacao.not(this).prop("checked", false);
+        toggleCompanionDetails();
+        $erroTipoParticipacao.removeClass("show");
     });
 
-    // Listener para quantidade de acompanhantes
-    $companionCount.on('change', function() {
+    $inputQuantidadeAcompanhantes.on("change", function() {
         generateCompanionNameFields();
-        $companionCountError.removeClass('show');
     });
 
-    // Submeter formulário
-    $form.on('submit', function(e) {
+    // Evento de submissão
+    $form.on("submit", function(e) {
         e.preventDefault();
-        clearErrors();
+        limparErros();
 
-        const name = $nameInput.val();
-        const attending = $('input[name="iraAoEvento"]:checked').val();
-        const companionChecked = $('input[name="tipoDeParticipacao"]:checked');
-        const companion = companionChecked.length > 0 ? companionChecked.val() : '-';
-        const companionCount = parseInt($companionCount.val()) || 0;
+        const nome = $inputNome.val();
+        const iraAoEvento = $('input[name="iraAoEvento"]:checked').val();
+        const tipoDeParticipacao = $('input[name="tipoDeParticipacao"]:checked');
+        const tipoParticipacaoValue = tipoDeParticipacao.length > 0 ? tipoDeParticipacao.val() : "-";
+        const quantidadeAcompanhantes = parseInt($inputQuantidadeAcompanhantes.val()) || 0;
 
         let isValid = true;
 
-        // Validação: nome não pode estar vazio
-        if (!name.trim()) {
-            $nameError.addClass('show');
+        // Validações
+        if (!nome.trim()) {
+            $erroNome.addClass("show");
             isValid = false;
         }
 
-        // Validação: presença no evento deve ser selecionada
-        if (!attending) {
-            $attendingError.addClass('show');
+        if (!iraAoEvento) {
+            $erroIraAoEvento.addClass("show");
             isValid = false;
         }
 
-        // Validação: se vai ao evento, precisa selecionar uma opção de companhia
-        if (attending === 'sim' && companionChecked.length === 0) {
-            $companionError.addClass('show');
+        if (iraAoEvento === "sim" && tipoDeParticipacao.length === 0) {
+            $erroTipoParticipacao.addClass("show");
             isValid = false;
         }
 
-        // Validação: se acompanhado, precisa preencher quantidade
-        if (companion === 'acompanhado' && companionCount === 0) {
-            $companionCountError.text('Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.');
-            $companionCountError.addClass('show');
+        if (tipoParticipacaoValue === "acompanhado" && quantidadeAcompanhantes === 0) {
+            $erroQuantidadeAcompanhantes.text("Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.").addClass("show");
             isValid = false;
         }
 
-        // Validação: se acompanhado, todos os nomes devem estar preenchidos
-        if (companion === 'acompanhado' && companionCount > 0) {
-            $companionNamesContainer = $('#containerNomesAcompanhantes');
-            const emptyInputs = $companionNamesContainer.find('.companion-name-input').filter(function() {
+        if (tipoParticipacaoValue === "acompanhado" && quantidadeAcompanhantes > 0) {
+            const emptyCompanions = $containerNomesAcompanhantes.find(".companion-name-input").filter(function() {
                 return !$(this).val().trim();
             });
-            
-            if (emptyInputs.length > 0) {
-                $companionNamesError.addClass('show');
+            if (emptyCompanions.length > 0) {
+                $erroNomesAcompanhantes.addClass("show");
                 isValid = false;
             }
         }
 
-        if (!isValid) {
-            return;
-        }
+        if (!isValid) return;
 
-        // Construir objeto com os dados do formulário
+        // Preparar dados
         const dadosFormulario = {
-            nome: name.trim(),
-            iraAoEvento: attending,
-            tipoDeParticipacao: companion,
-            quantidadeDeAcompanhantes: companion === 'acompanhado' ? companionCount : 0,
+            nome: nome.trim(),
+            iraAoEvento: iraAoEvento,
+            tipoDeParticipacao: tipoParticipacaoValue,
+            quantidadeDeAcompanhantes: tipoParticipacaoValue === "acompanhado" ? quantidadeAcompanhantes : 0,
             nomesAcompanhantes: []
         };
 
-        // Adicionar nomes dos acompanhantes
-        if (companion === 'acompanhado') {
-            $('#containerNomesAcompanhantes .companion-name-input').each(function() {
-                const companionName = $(this).val().trim();
-                if (companionName) {
-                    dadosFormulario.nomesAcompanhantes.push(companionName);
+        if (tipoParticipacaoValue === "acompanhado") {
+            $containerNomesAcompanhantes.find(".companion-name-input").each(function() {
+                const compNome = $(this).val().trim();
+                if (compNome) {
+                    dadosFormulario.nomesAcompanhantes.push(compNome);
                 }
             });
         }
 
-        // Enviar dados para o servidor
+        // Enviar para API
         $.ajax({
-            url: 'https://seu-endpoint-aqui.com/api/form', // SUBSTITUIR POR SEU ENDPOINT
+            url: 'https://localhost:5000/api/Convidado/adicionar',
             type: 'POST',
             contentType: 'application/json',
-            dataType: 'json',
             data: JSON.stringify(dadosFormulario),
             success: function(response) {
-                // Sucesso na resposta
-                $successMessage.removeClass('d-none').addClass('show');
-
-                // Montar resumo
-                const attendingText = attending === 'sim' ? 'Sim' : 'Não';
-                const companionText = companion === 'sozinho' ? 'Sozinho(a)' : 
-                                     companion === 'acompanhado' ? 'Acompanhado(a)' : '-';
-
-                let summaryHTML = `
-                    <div class="card-body">
-                        <p class="mb-2"><strong>Nome:</strong> ${escapeHtml(name)}</p>
-                        <p class="mb-2"><strong>Irá ao evento:</strong> ${attendingText}</p>
-                `;
-
-                if (attending === 'sim') {
-                    summaryHTML += `<p class="mb-2"><strong>Forma de participação:</strong> ${companionText}</p>`;
-                    
-                    if (companion === 'acompanhado') {
-                        summaryHTML += `<p class="mb-2"><strong>Quantidade de acompanhantes:</strong> ${companionCount}</p>`;
-                        summaryHTML += `<p class="mb-0"><strong>Nomes dos acompanhantes:</strong></p><ul class="mt-2">`;
-                        
-                        $('#containerNomesAcompanhantes .companion-name-input').each(function() {
-                            const companionName = $(this).val().trim();
-                            if (companionName) {
-                                summaryHTML += `<li>${escapeHtml(companionName)}</li>`;
-                            }
-                        });
-                        
-                        summaryHTML += `</ul>`;
-                    }
-                }
-
-                summaryHTML += `</div>`;
-
-                $formSummary.html(summaryHTML).removeClass('d-none');
-
-                // Limpar campos após 2 segundos
-                setTimeout(() => {
-                    $form[0].reset();
-                    $companionSection.addClass('d-none').removeClass('show');
-                    $successMessage.addClass('d-none').removeClass('show');
-                    $formSummary.addClass('d-none');
-                    $companionDetailsSection.addClass('d-none');
-                    $companionNamesContainer.empty().addClass('d-none');
-                    clearErrors();
-                }, 2000);
+                exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes);
             },
             error: function(xhr, status, error) {
-                // Erro na resposta
                 console.error('Erro ao enviar formulário:', error);
-                alert('Erro ao enviar o formulário. Por favor, tente novamente.');
+                // Mesmo com erro, mostrar o resumo
+                exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes);
             }
         });
     });
 
-    // Limpar formulário
-    $form.on('reset', function() {
-        setTimeout(() => {
-            $successMessage.addClass('d-none').removeClass('show');
-            $formSummary.addClass('d-none');
-            $companionSection.addClass('d-none').removeClass('show');
-            $companionDetailsSection.addClass('d-none');
-            $companionNamesContainer.empty().addClass('d-none');
-            clearErrors();
-        }, 0);
-    });
+    // Função para exibir resumo
+    function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes) {
+        $mensagemSucesso.removeClass("d-none").addClass("show");
 
-    // Função para escapar HTML e prevenir XSS
+        let resumoHTML = `<div class="card-body"><p class="mb-2"><strong>Nome:</strong> ${escapeHtml(nome)}</p><p class="mb-2"><strong>Irá ao evento:</strong> ${iraAoEvento === "sim" ? "Sim" : "Não"}</p>`;
+
+        if (iraAoEvento === "sim") {
+            const tipoParticipacao = tipoParticipacaoValue === "sozinho" ? "Sozinho(a)" : tipoParticipacaoValue === "acompanhado" ? "Acompanhado(a)" : "-";
+            resumoHTML += `<p class="mb-2"><strong>Forma de participação:</strong> ${tipoParticipacao}</p>`;
+
+            if (tipoParticipacaoValue === "acompanhado") {
+                resumoHTML += `<p class="mb-2"><strong>Quantidade de acompanhantes:</strong> ${quantidadeAcompanhantes}</p><p class="mb-0"><strong>Nomes dos acompanhantes:</strong></p><ul class="mt-2">`;
+                $containerNomesAcompanhantes.find(".companion-name-input").each(function() {
+                    const compNome = $(this).val().trim();
+                    if (compNome) {
+                        resumoHTML += `<li>${escapeHtml(compNome)}</li>`;
+                    }
+                });
+                resumoHTML += `</ul>`;
+            }
+        }
+
+        resumoHTML += `</div>`;
+        $resumoFormulario.html(resumoHTML).removeClass("d-none");
+
+        setTimeout(() => {
+            $form[0].reset();
+            $secaoParticipacao.addClass("d-none").removeClass("show");
+            $mensagemSucesso.addClass("d-none").removeClass("show");
+            $resumoFormulario.addClass("d-none");
+            $secaoDetalhesAcompanhamento.addClass("d-none");
+            $containerNomesAcompanhantes.empty().addClass("d-none");
+            limparErros();
+        }, 2000);
+    }
+
+    // Função para escapar HTML
     function escapeHtml(text) {
-        const map = {
+        const htmlEscapeMap = {
             '&': '&amp;',
             '<': '&lt;',
             '>': '&gt;',
             '"': '&quot;',
             "'": '&#039;'
         };
-        return text.replace(/[&<>"']/g, m => map[m]);
+        return text.replace(/[&<>"']/g, char => htmlEscapeMap[char]);
     }
+
+    // Evento de reset
+    $form.on("reset", function() {
+        setTimeout(() => {
+            $mensagemSucesso.addClass("d-none").removeClass("show");
+            $resumoFormulario.addClass("d-none");
+            $secaoParticipacao.addClass("d-none").removeClass("show");
+            $secaoDetalhesAcompanhamento.addClass("d-none");
+            $containerNomesAcompanhantes.empty().addClass("d-none");
+            limparErros();
+        }, 0);
+    });
 });
 
 
