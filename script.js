@@ -30,8 +30,7 @@ $(document).ready(function() {
 
     // Função para prevenir números em campos de texto
     function preventNumbers(event) {
-        const char = String.fromCharCode(event.which);
-        if (/[0-9]/.test(char)) {
+        if (/[0-9]/.test(event.key)) {
             event.preventDefault();
         }
     }
