@@ -312,16 +312,6 @@ $(document).ready(function() {
                 gerarArquivoIcs();
             });
         }
-
-        // Limpar o formulário após sucesso
-        setTimeout(() => {
-            $form[0].reset();
-            $secaoParticipacao.addClass("d-none").removeClass("show");
-            $resumoFormulario.addClass("d-none");
-            $secaoDetalhesAcompanhamento.addClass("d-none");
-            $containerNomesAcompanhantes.empty().addClass("d-none");
-            limparErros();
-        }, 2000);
     }
 
     // Função para gerar arquivo .ics (calendário)
