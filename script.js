@@ -320,7 +320,7 @@ $(document).ready(function() {
         
         // Adicionar botão de download do calendário se foi para o evento
         if (iraAoEvento === "sim") {
-            resumoHTML += `<div class="mt-4 text-center"><a href="#" class="btn btn-outline-primary btn-sm" id="btnBaixarCalendario" data-bs-toggle="tooltip" data-bs-title="Clique aqui pra adicionar nossa recepção ao seu calendario do telefone.">📅 Adicionar ao Calendário</a></div>`;
+            resumoHTML += `<div class="mt-4 text-center"><a href="#" class="btn btn-outline-primary btn-sm" id="btnBaixarCalendario" data-bs-toggle="tooltip" data-bs-title="Clique aqui pra adicionar nossa recepção ao seu calendario do telefone." title="Clique aqui pra adicionar nossa recepção ao seu calendario do telefone.">📅 Adicionar ao Calendário</a></div>`;
         }
         
         $resumoFormulario.html(resumoHTML).removeClass("d-none");
