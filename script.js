@@ -87,6 +87,11 @@ $(document).ready(function() {
         return text.replace(/[&<>"']/g, char => map[char]);
     }
 
+    // Função para capitalizar primeira letra de cada palavra
+    function capitalizeName(name) {
+        return name.trim().split(/\s+/).map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase()).join(' ');
+    }
+
     // Função para gerar campos de nomes dos acompanhantes
     function generateCompanionNameFields() {
         const quantity = parseInt($inputQuantidadeAcompanhantes.val()) || 0;
@@ -122,8 +127,9 @@ $(document).ready(function() {
         const nome = $(this).val().trim();
         
         if (nome.length > 0) {
+            const nomeCapitalizado = capitalizeName(nome);
             $.ajax({
-                url: 'https://eventos-hmlo.onrender.com/api/Convidado/verificar?nome=' + encodeURIComponent(nome),
+                url: 'https://eventos-hmlo.onrender.com/api/Convidado/verificar?nome=' + encodeURIComponent(nomeCapitalizado),
                 type: 'GET',
                 success: function(response) {
                     if (response && response.existe) {
@@ -173,8 +179,9 @@ $(document).ready(function() {
         let isValid = true;
 
         // Validações
-        if (!nome.trim()) {
-            $erroNome.addClass("show");
+        const nomePalavras = nome.trim().split(/\s+/).filter(word => word.length > 0);
+        if (!nome.trim() || nomePalavras.length < 2) {
+            $erroNome.text("Por favor, insira seu nome completo (nome e sobrenome).").addClass("show");
             isValid = false;
         }
 
@@ -211,8 +218,9 @@ $(document).ready(function() {
         }
 
         // Preparar dados
+        const nomeCapitalizado = capitalizeName(nome);
         const dadosFormulario = {
-            nome: nome.trim(),
+            nome: nomeCapitalizado,
             iraAoRodizio: iraAoEvento === "sim",
             participacao: tipoParticipacaoValue === "sozinho" ? "Sozinho" : tipoParticipacaoValue === "acompanhado" ? "Acompanhado" : "-",
             quantidadeAcompanhantes: tipoParticipacaoValue === "acompanhado" ? quantidadeAcompanhantes : 0,
