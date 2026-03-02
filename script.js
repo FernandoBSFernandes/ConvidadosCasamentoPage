@@ -122,6 +122,19 @@ $(document).ready(function() {
     // Eventos
     $inputNome.on("keypress", preventNumbers);
 
+    // Capitalizar nome em tempo real
+    $inputNome.on("input", function() {
+        const cursorPos = this.selectionStart;
+        const valor = $(this).val();
+        const valorCapitalizado = capitalizeName(valor);
+        
+        if (valor !== valorCapitalizado) {
+            $(this).val(valorCapitalizado);
+            // Restaurar posição do cursor
+            this.setSelectionRange(cursorPos, cursorPos);
+        }
+    });
+
     // Verificar se o convidado já existe quando sair do campo de nome
     $inputNome.on("blur", function() {
         const nome = $(this).val().trim();
