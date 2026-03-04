@@ -270,18 +270,18 @@ $(document).ready(function() {
         }
 
         // Enviar para API
-        $loading.show();
+        $loading.addClass('show');
         $.ajax({
             url: 'https://eventos-hmlo.onrender.com/api/Convidado/adicionar',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(dadosFormulario),
             success: function(response) {
-                $loading.hide();
+                $loading.removeClass('show');
                 exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response);
             },
             error: function(xhr, status, error) {
-                $loading.hide();
+                $loading.removeClass('show');
                 console.error('Erro ao enviar formulário:', error);
                 const erroResponse = xhr.responseJSON || { mensagem: 'Erro desconhecido ao enviar o formulário.' };
                 exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, erroResponse);
