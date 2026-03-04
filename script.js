@@ -1,38 +1,4 @@
 $(document).ready(function() {
-    // ===== MODO TESTE LOCAL - Simular API =====
-    // Descomente a linha abaixo para ativar modo teste
-    const MODO_TESTE_LOCAL = false; // Mude para true para testar localmente
-    
-    if (MODO_TESTE_LOCAL) {
-        const originalAjax = $.ajax;
-        $.ajax = function(settings) {
-            const url = settings.url || '';
-            console.log('🧪 [TESTE] Interceptando AJAX:', settings.type, url);
-            
-            // Simular delay de rede
-            return new Promise((resolve) => {
-                setTimeout(() => {
-                    if (settings.type === 'GET') {
-                        // Simular verificação de duplicata
-                        console.log('✅ [TESTE] Retornando: nome não existe');
-                        const response = { existe: false };
-                        if (settings.success) settings.success(response);
-                        resolve({ responseJSON: response });
-                    } else if (settings.type === 'POST') {
-                        // Simular adição de convidado
-                        console.log('✅ [TESTE] Retornando: convidado adicionado com sucesso');
-                        const response = { codigoStatus: 200, mensagem: 'Convidado adicionado com sucesso!' };
-                        if (settings.success) settings.success(response);
-                        resolve({ responseJSON: response });
-                    }
-                }, 800); // 800ms de delay
-            }).catch(error => {
-                if (settings.error) settings.error({}, 'error', error);
-            });
-        };
-    }
-    // =========================================
-    
     // Cache de elementos
     const $form = $("#formularioEvento");
     const $btnSubmit = $('button[type="submit"]');
