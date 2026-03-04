@@ -3,8 +3,7 @@ $(document).ready(function() {
     const $form = $("#formularioEvento");
     const $btnSubmit = $('button[type="submit"]');
     const $loading = $('<div class="position-fixed top-50 start-50 translate-middle text-center" id="loadingOverlay" style="display: none; z-index: 9999;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-3 fw-semibold text-primary">Processando...</p></div>');
-    $('body').append($loading);
-    const $radioPresenca = $('input[name="iraAoEvento"]');
+    $('body').append($loading);    let formSubmitedSuccessfully = false;    const $radioPresenca = $('input[name="iraAoEvento"]');
     const $secaoParticipacao = $("#secaoParticipacao");
     const $checkboxParticipacao = $('input[name="tipoDeParticipacao"]');
     const $mensagemSucesso = $("#mensagemSucesso");
@@ -259,11 +258,12 @@ $(document).ready(function() {
 
     // Função para exibir resumo
     function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response) {
-        $btnSubmit.prop("disabled", false);
         let temErro = response && response.codigoStatus && response.codigoStatus >= 400;
         
         if (temErro) {
-            // Se há erro, mostra apenas a mensagem de erro
+            // Se há erro, mostra apenas a mensagem de erro e habilita botão novamente
+            $btnSubmit.prop("disabled", false);
+            formSubmitedSuccessfully = false;
             let mensagemErro = "";
             if (response && typeof response.mensagem === 'string') {
                 mensagemErro = `<div class="alert alert-danger" role="alert">${escapeHtml(response.mensagem)}</div>`;
@@ -273,6 +273,10 @@ $(document).ready(function() {
             $resumoFormulario.html(mensagemErro).removeClass("d-none");
             return;
         }
+        
+        // Se sucesso, bloqueia permanentemente o botão
+        $btnSubmit.prop("disabled", true);
+        formSubmitedSuccessfully = true;
         
         // Se não há erro, mostra mensagem de sucesso e dados
         $mensagemSucesso.removeClass("d-none").addClass("show");
@@ -363,6 +367,14 @@ END:VCALENDAR`;
         document.body.removeChild(element);
     }
 
+    // Evento de input no campo de nome para re-habilitar botão após sucesso
+    $inputNome.on("input", function() {
+        if (formSubmitedSuccessfully && $(this).val().trim() !== "") {
+            $btnSubmit.prop("disabled", false);
+            formSubmitedSuccessfully = false;
+        }
+    });
+
     // Evento de reset
     $form.on("reset", function() {
         setTimeout(() => {
@@ -371,6 +383,8 @@ END:VCALENDAR`;
             $secaoParticipacao.addClass("d-none").removeClass("show");
             $secaoDetalhesAcompanhamento.addClass("d-none");
             $containerNomesAcompanhantes.empty().addClass("d-none");
+            $btnSubmit.prop("disabled", false);
+            formSubmitedSuccessfully = false;
             limparErros();
         }, 0);
     });
