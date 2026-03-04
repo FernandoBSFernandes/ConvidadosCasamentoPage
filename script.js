@@ -37,8 +37,8 @@ $(document).ready(function() {
         }
     }
 
-    // Função para alternar seção de participação
-    function toggleCompanionSection() {
+    // Função para alternar seção de acompanhantes
+    function alternarSecaoAcompanhantes() {
         const isChecked = $("#radioSimIrei").is(":checked");
         if (isChecked) {
             $secaoParticipacao.removeClass("d-none").addClass("show");
@@ -56,7 +56,7 @@ $(document).ready(function() {
     }
 
     // Função para alternar detalhes de acompanhamento
-    function toggleCompanionDetails() {
+    function alternarDetalhesAcompanhantes() {
         const isChecked = $checkboxAcompanhado.is(":checked");
         if (isChecked) {
             $secaoDetalhesAcompanhamento.removeClass("d-none");
@@ -94,7 +94,7 @@ $(document).ready(function() {
     }
 
     // Função para gerar campos de nomes dos acompanhantes
-    function generateCompanionNameFields() {
+    function gerarCamposNomesAcompanhantes() {
         const quantity = parseInt($inputQuantidadeAcompanhantes.val()) || 0;
 
         if (quantity > 0 && quantity <= 10) {
@@ -151,18 +151,18 @@ $(document).ready(function() {
     });
 
     $radioPresenca.on("change", function() {
-        toggleCompanionSection();
+        alternarSecaoAcompanhantes();
         limparErros();
     });
 
     $checkboxParticipacao.on("change", function() {
         $(this).is(":checked") && $checkboxParticipacao.not(this).prop("checked", false);
-        toggleCompanionDetails();
+        alternarDetalhesAcompanhantes();
         $erroTipoParticipacao.removeClass("show");
     });
 
     $inputQuantidadeAcompanhantes.on("change input", function() {
-        generateCompanionNameFields();
+        gerarCamposNomesAcompanhantes();
     });
 
     // Evento de submissão
