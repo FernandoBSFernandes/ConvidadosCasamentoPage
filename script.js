@@ -36,8 +36,7 @@ $(document).ready(function() {
     // Cache de elementos
     const $form = $("#formularioEvento");
     const $btnSubmit = $('button[type="submit"]');
-    const $loading = $('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(0, 0, 0, 0.5); display: none; z-index: 9999; display: flex; align-items: center; justify-content: center;"><div class="text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-3 fw-semibold text-light">Processando...</p></div></div>');
-    $('body').append($loading);    let formSubmitedSuccessfully = false;    const $radioPresenca = $('input[name="iraAoEvento"]');
+    const $loading = $("#loadingOverlay"); // Loading já existe no HTML    const $radioPresenca = $('input[name="iraAoEvento"]');
     const $secaoParticipacao = $("#secaoParticipacao");
     const $checkboxParticipacao = $('input[name="tipoDeParticipacao"]');
     const $mensagemSucesso = $("#mensagemSucesso");
