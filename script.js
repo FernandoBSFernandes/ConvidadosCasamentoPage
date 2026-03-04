@@ -2,6 +2,8 @@ $(document).ready(function() {
     // Cache de elementos
     const $form = $("#formularioEvento");
     const $btnSubmit = $('button[type="submit"]');
+    const $loading = $('<div class="position-fixed top-50 start-50 translate-middle text-center" id="loadingOverlay" style="display: none; z-index: 9999;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-3 fw-semibold text-primary">Processando...</p></div>');
+    $('body').append($loading);
     const $radioPresenca = $('input[name="iraAoEvento"]');
     const $secaoParticipacao = $("#secaoParticipacao");
     const $checkboxParticipacao = $('input[name="tipoDeParticipacao"]');
@@ -236,15 +238,18 @@ $(document).ready(function() {
         }
 
         // Enviar para API
+        $loading.show();
         $.ajax({
             url: 'https://eventos-hmlo.onrender.com/api/Convidado/adicionar',
             type: 'POST',
             contentType: 'application/json',
             data: JSON.stringify(dadosFormulario),
             success: function(response) {
+                $loading.hide();
                 exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response);
             },
             error: function(xhr, status, error) {
+                $loading.hide();
                 console.error('Erro ao enviar formulário:', error);
                 const erroResponse = xhr.responseJSON || { mensagem: 'Erro desconhecido ao enviar o formulário.' };
                 exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, erroResponse);
