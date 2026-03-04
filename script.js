@@ -1,8 +1,42 @@
 $(document).ready(function() {
+    // ===== MODO TESTE LOCAL - Simular API =====
+    // Descomente a linha abaixo para ativar modo teste
+    const MODO_TESTE_LOCAL = false; // Mude para true para testar localmente
+    
+    if (MODO_TESTE_LOCAL) {
+        const originalAjax = $.ajax;
+        $.ajax = function(settings) {
+            const url = settings.url || '';
+            console.log('🧪 [TESTE] Interceptando AJAX:', settings.type, url);
+            
+            // Simular delay de rede
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    if (settings.type === 'GET') {
+                        // Simular verificação de duplicata
+                        console.log('✅ [TESTE] Retornando: nome não existe');
+                        const response = { existe: false };
+                        if (settings.success) settings.success(response);
+                        resolve({ responseJSON: response });
+                    } else if (settings.type === 'POST') {
+                        // Simular adição de convidado
+                        console.log('✅ [TESTE] Retornando: convidado adicionado com sucesso');
+                        const response = { codigoStatus: 200, mensagem: 'Convidado adicionado com sucesso!' };
+                        if (settings.success) settings.success(response);
+                        resolve({ responseJSON: response });
+                    }
+                }, 800); // 800ms de delay
+            }).catch(error => {
+                if (settings.error) settings.error({}, 'error', error);
+            });
+        };
+    }
+    // =========================================
+    
     // Cache de elementos
     const $form = $("#formularioEvento");
     const $btnSubmit = $('button[type="submit"]');
-    const $loading = $('<div class="position-fixed top-50 start-50 translate-middle text-center" id="loadingOverlay" style="display: none; z-index: 9999;"><div class="spinner-border text-primary" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-3 fw-semibold text-primary">Processando...</p></div>');
+    const $loading = $('<div id="loadingOverlay" style="position: fixed; top: 0; left: 0; width: 100%; height: 100vh; background-color: rgba(0, 0, 0, 0.5); display: none; z-index: 9999; display: flex; align-items: center; justify-content: center;"><div class="text-center"><div class="spinner-border text-light" role="status"><span class="visually-hidden">Carregando...</span></div><p class="mt-3 fw-semibold text-light">Processando...</p></div></div>');
     $('body').append($loading);    let formSubmitedSuccessfully = false;    const $radioPresenca = $('input[name="iraAoEvento"]');
     const $secaoParticipacao = $("#secaoParticipacao");
     const $checkboxParticipacao = $('input[name="tipoDeParticipacao"]');
