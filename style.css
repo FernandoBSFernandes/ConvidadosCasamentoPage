@@ -55,6 +55,12 @@ html, body {
 /* ============================================
    IMAGEM CAPA
    ============================================ */
+.imagem-capa {
+    margin: -3rem -3rem 1.5rem -3rem;
+    border-radius: 15px 15px 0 0;
+    overflow: hidden;
+}
+
 .imagem-capa img {
     height: 250px;
     object-fit: cover;
@@ -69,14 +75,31 @@ html, body {
 }
 
 /* ============================================
+   MAPA CONTAINER
+   ============================================ */
+.mapa-container {
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.mapa-container iframe {
+    border: none;
+}
+
+/* ============================================
    LOADING OVERLAY
    ============================================ */
 #loadingOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100vh;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: none;
     z-index: 10000;
-}
-
-#loadingOverlay.show {
-    display: flex !important;
+    align-items: center;
+    justify-content: center;
 }
 
 #loadingOverlay .spinner-border {
