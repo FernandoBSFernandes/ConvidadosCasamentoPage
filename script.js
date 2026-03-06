@@ -1,4 +1,21 @@
 $(document).ready(function() {
+    // Verificar se o prazo de inscrições passou
+    function verificarPrazoInscricoes() {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        
+        const prazoLimite = new Date(2026, 2, 26); // Mês é 0-indexed (2 = março, data limite: 26/03/2026)
+        prazoLimite.setHours(23, 59, 59, 999);
+        
+        if (hoje > prazoLimite) {
+            // Prazo passou - travar form
+            $form.find('input, textarea, select, button').prop('disabled', true);
+            $form.prepend('<div class="alert alert-danger fw-bold mb-4" role="alert">🚫 <strong>Inscrições Encerradas!</strong> O prazo para inscrições (26/03/2026) já passou. Obrigado a todos que se inscreveram!</div>');
+            return false;
+        }
+        return true;
+    }
+    
     // Cache de elementos
     const $form = $("#formularioEvento");
     const $btnSubmit = $('button[type="submit"]');
@@ -121,6 +138,8 @@ $(document).ready(function() {
     }
 
     // Eventos
+    verificarPrazoInscricoes(); // Verificar prazo antes de qualquer coisa
+    
     $inputNome.on("keypress", preventNumbers);
 
     // Verificar se o convidado já existe quando sair do campo de nome

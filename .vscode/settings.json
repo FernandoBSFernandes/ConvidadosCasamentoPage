@@ -1,0 +1,8 @@
+{
+    "chat.tools.terminal.autoApprove": {
+        "/^npx terser script\\.js -o script\\.min\\.js --compress --mangle$/": {
+            "approve": true,
+            "matchCommandLine": true
+        }
+    }
+}
