@@ -230,10 +230,15 @@ $(document).ready(function() {
             }
         }
 
-        if (!isValid) return;
+        // Se há erro de validação, reabilita o botão e retorna
+        if (!isValid) {
+            $btnSubmit.prop("disabled", false);
+            return;
+        }
 
         // Verificar se o nome é duplicado
         if ($inputNome.attr('data-duplicado') === 'true') {
+            $btnSubmit.prop("disabled", false);
             return;
         }
 
