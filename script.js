@@ -281,16 +281,28 @@ $(document).ready(function() {
         let temErro = response && response.codigoStatus && response.codigoStatus >= 400;
         
         if (temErro) {
-            // Se há erro, mostra apenas a mensagem de erro e habilita botão novamente
-            $btnSubmit.prop("disabled", false);
-            formSubmitedSuccessfully = false;
-            let mensagemErro = "";
-            if (response && typeof response.mensagem === 'string') {
-                mensagemErro = `<div class="alert alert-danger" role="alert">${escapeHtml(response.mensagem)}</div>`;
+            // Verificar se é um erro de limite de convidados
+            const mensagemApi = response && typeof response.mensagem === 'string' ? response.mensagem.toLowerCase() : '';
+            const ehErroLimite = mensagemApi.includes('limite') || mensagemApi.includes('100') || mensagemApi.includes('lotado') || mensagemApi.includes('cheio') || mensagemApi.includes('máxim');
+            
+            if (ehErroLimite) {
+                // Se é limite de convidados, bloqueia o botão permanentemente
+                $btnSubmit.prop("disabled", true);
+                formSubmitedSuccessfully = true;
+                const mensagemErro = `<div class="alert alert-danger fw-bold" role="alert">🚫 <strong>Inscrições Encerradas!</strong> Infelizmente, atingimos o limite máximo de 100 convidados confirmados. Obrigado pelo interesse!</div>`;
+                $resumoFormulario.html(mensagemErro).removeClass("d-none");
             } else {
-                mensagemErro = `<div class="alert alert-danger" role="alert">Erro ao processar o formulário.</div>`;
+                // Se é outro erro, reabilita o botão
+                $btnSubmit.prop("disabled", false);
+                formSubmitedSuccessfully = false;
+                let mensagemErro = "";
+                if (response && typeof response.mensagem === 'string') {
+                    mensagemErro = `<div class="alert alert-danger" role="alert">❌ ${escapeHtml(response.mensagem)}</div>`;
+                } else {
+                    mensagemErro = `<div class="alert alert-danger" role="alert">❌ Erro ao processar o formulário. Tente novamente.</div>`;
+                }
+                $resumoFormulario.html(mensagemErro).removeClass("d-none");
             }
-            $resumoFormulario.html(mensagemErro).removeClass("d-none");
             return;
         }
         
