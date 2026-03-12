@@ -137,8 +137,56 @@ $(document).ready(function() {
         }
     }
 
+    // Função para atualizar a barra de progresso de vagas
+    function atualizarBarraVagas(vagasRestantes, pessoasConfirmadas) {
+        const total = 100;
+        const preenchido = pessoasConfirmadas;
+        const percentual = Math.min((preenchido / total) * 100, 100);
+
+        const $barra = $("#barraVagas");
+        const $texto = $("#textoVagas");
+        const $contagem = $("#textoContagem");
+
+        $barra.css("width", percentual + "%").attr("aria-valuenow", percentual);
+        $contagem.text(preenchido + "/" + total + " pessoas");
+
+        // Variação de cor conforme vagas restantes
+        $barra.removeClass("bg-success bg-warning bg-danger text-dark");
+        if (vagasRestantes > 50) {
+            $barra.addClass("bg-success");
+            $texto.text("🟢 " + vagasRestantes + " vagas disponíveis");
+        } else if (vagasRestantes > 20) {
+            $barra.addClass("bg-warning text-dark");
+            $texto.text("🟡 Atenção! Apenas " + vagasRestantes + " vagas restantes");
+        } else if (vagasRestantes > 0) {
+            $barra.addClass("bg-danger");
+            $texto.text("🔴 Últimas " + vagasRestantes + " vagas! Corra!");
+        } else {
+            $barra.addClass("bg-danger");
+            $texto.text("🚫 Vagas esgotadas!");
+        }
+    }
+
+    // Função para buscar vagas na API
+    function buscarVagasRestantes() {
+        $.ajax({
+            url: 'https://eventos-hmlo.onrender.com/api/Convidado/vagas-restantes',
+            type: 'GET',
+            success: function(response) {
+                if (response && typeof response.vagasRestantes === 'number') {
+                    atualizarBarraVagas(response.vagasRestantes, response.pessoasConfirmadas);
+                }
+            },
+            error: function() {
+                $("#textoVagas").text("Não foi possível carregar as vagas.");
+            }
+        });
+    }
+
     // Eventos
     verificarPrazoInscricoes(); // Verificar prazo antes de qualquer coisa
+    buscarVagasRestantes(); // Carregar vagas ao inicializar
+    setInterval(buscarVagasRestantes, 60000); // Polling a cada 60 segundos
     
     $inputNome.on("keypress", preventNumbers);
 
@@ -270,6 +318,10 @@ $(document).ready(function() {
             data: JSON.stringify(dadosFormulario),
             success: function(response) {
                 $loading.removeClass('show');
+                // Atualizar barra de vagas com dados da resposta do cadastro
+                if (response && typeof response.vagasRestantes === 'number') {
+                    atualizarBarraVagas(response.vagasRestantes, response.pessoasConfirmadas);
+                }
                 exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response);
             },
             error: function(xhr, status, error) {
