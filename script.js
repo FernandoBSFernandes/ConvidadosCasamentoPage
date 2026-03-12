@@ -283,21 +283,26 @@ $(document).ready(function() {
 
     // Função para exibir resumo
     function exibirResumo(dadosFormulario, nome, iraAoEvento, tipoParticipacaoValue, quantidadeAcompanhantes, response) {
-        let temErro = response && response.codigoStatus && response.codigoStatus >= 400;
+        // Verificar se há erro na resposta
+        // Considera erro se: codigoStatus >= 400 OU se houver mensagem de erro na resposta
+        const codigoStatus = response && response.codigoStatus ? response.codigoStatus : null;
+        const temErroStatus = codigoStatus && codigoStatus >= 400;
+        const temErroMensagem = response && response.mensagem && response.mensagem.toLowerCase().includes('erro');
+        const temErro = temErroStatus || temErroMensagem;
         
         if (temErro) {
-            // Verificar se é um erro de limite de convidados
+            // É um erro da API - verificar se é limite de convidados
             const mensagemApi = response && typeof response.mensagem === 'string' ? response.mensagem.toLowerCase() : '';
             const ehErroLimite = mensagemApi.includes('limite') || mensagemApi.includes('100') || mensagemApi.includes('lotado') || mensagemApi.includes('cheio') || mensagemApi.includes('máxim');
             
             if (ehErroLimite) {
-                // Se é limite de convidados, bloqueia o botão permanentemente
+                // ❌ Erro de limite de convidados - BLOQUEIA PERMANENTEMENTE
                 $btnSubmit.prop("disabled", true);
                 formSubmitedSuccessfully = true;
                 const mensagemErro = `<div class="alert alert-danger fw-bold" role="alert">🚫 <strong>Inscrições Encerradas!</strong> Infelizmente, atingimos o limite máximo de 100 convidados confirmados. Obrigado pelo interesse!</div>`;
                 $resumoFormulario.html(mensagemErro).removeClass("d-none");
             } else {
-                // Se é outro erro, reabilita o botão
+                // ❌ Outro erro qualquer (validação, rede, bad request, etc) - LIBERA BOTÃO para tentar novamente
                 $btnSubmit.prop("disabled", false);
                 formSubmitedSuccessfully = false;
                 let mensagemErro = "";
@@ -311,11 +316,11 @@ $(document).ready(function() {
             return;
         }
         
-        // Se sucesso, bloqueia permanentemente o botão
+        // ✅ SUCESSO - BLOQUEIA PERMANENTEMENTE o botão
         $btnSubmit.prop("disabled", true);
         formSubmitedSuccessfully = true;
         
-        // Se não há erro, mostra mensagem de sucesso e dados
+        // Mostra mensagem de sucesso
         $mensagemSucesso.removeClass("d-none").addClass("show");
 
         let mensagemPersonalizada = "";
