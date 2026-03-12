@@ -187,6 +187,28 @@ $(document).ready(function() {
     verificarPrazoInscricoes(); // Verificar prazo antes de qualquer coisa
     buscarVagasRestantes(); // Carregar vagas ao inicializar
     setInterval(buscarVagasRestantes, 60000); // Polling a cada 60 segundos
+
+    // Contagem regressiva de dias até o prazo
+    function atualizarContagemDias() {
+        const hoje = new Date();
+        hoje.setHours(0, 0, 0, 0);
+        const prazo = new Date(2026, 2, 26);
+        prazo.setHours(0, 0, 0, 0);
+        const diasRestantes = Math.round((prazo - hoje) / (1000 * 60 * 60 * 24));
+        const $badge = $("#contagemDias");
+
+        $badge.removeClass("bg-success bg-warning text-dark bg-danger");
+        if (diasRestantes > 7) {
+            $badge.addClass("bg-success").text("📅 " + diasRestantes + " dias restantes");
+        } else if (diasRestantes > 0) {
+            $badge.addClass("bg-danger").text("🔥 Últimos " + diasRestantes + " dias!");
+        } else if (diasRestantes === 0) {
+            $badge.addClass("bg-danger").text("⚡ Último dia!");
+        } else {
+            $badge.addClass("bg-danger").text("🚫 Prazo encerrado");
+        }
+    }
+    atualizarContagemDias();
     
     $inputNome.on("keypress", preventNumbers);
 
