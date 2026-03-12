@@ -198,8 +198,10 @@ $(document).ready(function() {
         const $badge = $("#contagemDias");
 
         $badge.removeClass("bg-success bg-warning text-dark bg-danger");
-        if (diasRestantes > 7) {
+        if (diasRestantes > 10) {
             $badge.addClass("bg-success").text("📅 " + diasRestantes + " dias restantes");
+        } else if (diasRestantes >= 5) {
+            $badge.addClass("bg-warning text-dark").text("⚠️ " + diasRestantes + " dias restantes");
         } else if (diasRestantes > 0) {
             $badge.addClass("bg-danger").text("🔥 Últimos " + diasRestantes + " dias!");
         } else if (diasRestantes === 0) {
