@@ -301,38 +301,20 @@ $(document).ready(function() {
         // Se não há erro, mostra mensagem de sucesso e dados
         $mensagemSucesso.removeClass("d-none").addClass("show");
 
-        let resumoHTML = `<div class="card-body"><p class="mb-2"><strong>Nome:</strong> ${escapeHtml(nome)}</p><p class="mb-2"><strong>Irá ao evento:</strong> ${iraAoEvento === "sim" ? "Sim" : "Não"}</p>`;
-
         let mensagemPersonalizada = "";
+        let resumoHTML = "";
         
         if (iraAoEvento === "não") {
             mensagemPersonalizada = `<div class="alert alert-warning mt-4 mb-0" role="alert">😢 Ficaremos triste com a sua não presença. Lamentamos, mas entendemos a sua ausência!</div>`;
         } else if (iraAoEvento === "sim") {
             if (tipoParticipacaoValue === "acompanhado") {
-                mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso! Estaremos também aguardando os seus acompanhantes!</div>`;
+                mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso! Estaremos também aguardando os seus acompanhantes!<br><br><small>💡 <strong>Dica:</strong> Você pode adicionar este evento ao seu calendário clicando no botão abaixo.</small></div>`;
             } else {
-                mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso!</div>`;
+                mensagemPersonalizada = `<div class="alert alert-success mt-4 mb-0" role="alert">✅ Convidado cadastrado com sucesso!<br><br><small>💡 <strong>Dica:</strong> Você pode adicionar este evento ao seu calendário clicando no botão abaixo.</small></div>`;
             }
         }
-
-        if (iraAoEvento === "sim") {
-            const tipoParticipacao = tipoParticipacaoValue === "sozinho" ? "Sozinho(a)" : tipoParticipacaoValue === "acompanhado" ? "Acompanhado(a)" : "-";
-            resumoHTML += `<p class="mb-2"><strong>Forma de participação:</strong> ${tipoParticipacao}</p>`;
-
-            if (tipoParticipacaoValue === "acompanhado") {
-                resumoHTML += `<p class="mb-2"><strong>Quantidade de acompanhantes:</strong> ${quantidadeAcompanhantes}</p><p class="mb-0"><strong>Nomes dos acompanhantes:</strong></p><ul class="mt-2">`;
-                $containerNomesAcompanhantes.find(".companion-name-input").each(function() {
-                    const compNome = $(this).val().trim();
-                    if (compNome) {
-                        resumoHTML += `<li>${escapeHtml(compNome)}</li>`;
-                    }
-                });
-                resumoHTML += `</ul>`;
-            }
-        }
-
-        resumoHTML += `</div>`;
-        resumoHTML += mensagemPersonalizada;
+        
+        resumoHTML = mensagemPersonalizada;
         
         // Adicionar botão de download do calendário se foi para o evento
         if (iraAoEvento === "sim") {
