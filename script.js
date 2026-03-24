@@ -467,7 +467,9 @@ END:VCALENDAR`;
     }
 
     // Evento de input no campo de nome para re-habilitar botão após sucesso
+    // Também limpa o flag de duplicado para não bloquear nova tentativa com nome diferente
     $inputNome.on("input", function() {
+        $(this).removeAttr('data-duplicado');
         if (formSubmitedSuccessfully && $(this).val().trim() !== "") {
             $btnSubmit.prop("disabled", false);
             formSubmitedSuccessfully = false;
@@ -484,6 +486,7 @@ END:VCALENDAR`;
             $containerNomesAcompanhantes.empty().addClass("d-none");
             $btnSubmit.prop("disabled", false);
             formSubmitedSuccessfully = false;
+            $inputNome.removeAttr('data-duplicado');
             limparErros();
         }, 0);
     });
