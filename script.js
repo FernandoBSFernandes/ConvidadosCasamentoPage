@@ -37,11 +37,11 @@ $(document).ready(function() {
 
     // Função para limpar erros
     function limparErros() {
-        $erroNome.removeClass("show");
-        $erroIraAoEvento.removeClass("show");
-        $erroTipoParticipacao.removeClass("show");
-        $erroQuantidadeAcompanhantes.removeClass("show");
-        $erroNomesAcompanhantes.removeClass("show");
+        $erroNome.addClass("d-none").removeClass("show");
+        $erroIraAoEvento.addClass("d-none").removeClass("show");
+        $erroTipoParticipacao.addClass("d-none").removeClass("show");
+        $erroQuantidadeAcompanhantes.addClass("d-none").removeClass("show");
+        $erroNomesAcompanhantes.addClass("d-none").removeClass("show");
     }
 
     // Função para prevenir números em campos de texto
@@ -63,9 +63,9 @@ $(document).ready(function() {
             $secaoDetalhesAcompanhamento.addClass("d-none");
             $inputQuantidadeAcompanhantes.val("");
             $containerNomesAcompanhantes.empty().addClass("d-none");
-            $erroTipoParticipacao.removeClass("show");
-            $erroQuantidadeAcompanhantes.removeClass("show");
-            $erroNomesAcompanhantes.removeClass("show");
+            $erroTipoParticipacao.addClass("d-none").removeClass("show");
+            $erroQuantidadeAcompanhantes.addClass("d-none").removeClass("show");
+            $erroNomesAcompanhantes.addClass("d-none").removeClass("show");
         }
     }
 
@@ -79,8 +79,8 @@ $(document).ready(function() {
             $secaoDetalhesAcompanhamento.addClass("d-none");
             $inputQuantidadeAcompanhantes.prop("required", false).val("");
             $containerNomesAcompanhantes.empty().addClass("d-none");
-            $erroQuantidadeAcompanhantes.removeClass("show");
-            $erroNomesAcompanhantes.removeClass("show");
+            $erroQuantidadeAcompanhantes.addClass("d-none").removeClass("show");
+            $erroNomesAcompanhantes.addClass("d-none").removeClass("show");
         }
     }
 
@@ -124,13 +124,13 @@ $(document).ready(function() {
                 $("#companionName" + i).on("keypress", preventNumbers);
             }
             $containerNomesAcompanhantes.removeClass("d-none");
-            $erroQuantidadeAcompanhantes.removeClass("show");
+            $erroQuantidadeAcompanhantes.addClass("d-none").removeClass("show");
         } else if (quantity === 0 && $inputQuantidadeAcompanhantes.val() === "0") {
-            $erroQuantidadeAcompanhantes.text("Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.").addClass("show");
+            $erroQuantidadeAcompanhantes.text("Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.").removeClass("d-none").addClass("show");
             $containerNomesAcompanhantes.empty().addClass("d-none");
         } else {
             $containerNomesAcompanhantes.empty().addClass("d-none");
-            $erroQuantidadeAcompanhantes.removeClass("show");
+            $erroQuantidadeAcompanhantes.addClass("d-none").removeClass("show");
         }
     }
 
@@ -247,7 +247,7 @@ $(document).ready(function() {
     $checkboxParticipacao.on("change", function() {
         $(this).is(":checked") && $checkboxParticipacao.not(this).prop("checked", false);
         alternarDetalhesAcompanhantes();
-        $erroTipoParticipacao.removeClass("show");
+        $erroTipoParticipacao.addClass("d-none").removeClass("show");
     });
 
     $inputQuantidadeAcompanhantes.on("change input", function() {
@@ -271,22 +271,22 @@ $(document).ready(function() {
         // Validações
         const nomePalavras = nome.trim().split(/\s+/).filter(word => word.length > 0);
         if (!nome.trim() || nomePalavras.length < 2) {
-            $erroNome.text("Por favor, insira seu nome completo (nome e sobrenome).").addClass("show");
+            $erroNome.text("Por favor, insira seu nome completo (nome e sobrenome).").removeClass("d-none").addClass("show");
             isValid = false;
         }
 
         if (!iraAoEvento) {
-            $erroIraAoEvento.addClass("show");
+            $erroIraAoEvento.removeClass("d-none").addClass("show");
             isValid = false;
         }
 
         if (iraAoEvento === "sim" && tipoDeParticipacao.length === 0) {
-            $erroTipoParticipacao.addClass("show");
+            $erroTipoParticipacao.removeClass("d-none").addClass("show");
             isValid = false;
         }
 
         if (tipoParticipacaoValue === "acompanhado" && quantidadeAcompanhantes === 0) {
-            $erroQuantidadeAcompanhantes.text("Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.").addClass("show");
+            $erroQuantidadeAcompanhantes.text("Por favor, informe a partir de 1 acompanhante, ou informe que você vai sozinha.").removeClass("d-none").addClass("show");
             isValid = false;
         }
 
@@ -295,7 +295,7 @@ $(document).ready(function() {
                 return !$(this).val().trim();
             });
             if (emptyCompanions.length > 0) {
-                $erroNomesAcompanhantes.addClass("show");
+                $erroNomesAcompanhantes.removeClass("d-none").addClass("show");
                 isValid = false;
             }
         }
@@ -308,6 +308,7 @@ $(document).ready(function() {
 
         // Verificar se o nome é duplicado
         if ($inputNome.attr('data-duplicado') === 'true') {
+            $erroNome.text("Este nome já está registrado na lista. Caso precise de ajuda, entre em contato conosco.").removeClass("d-none").addClass("show");
             $btnSubmit.prop("disabled", false);
             return;
         }
@@ -373,7 +374,7 @@ $(document).ready(function() {
                 // ❌ Erro de limite de convidados - BLOQUEIA PERMANENTEMENTE
                 $btnSubmit.prop("disabled", true);
                 formSubmitedSuccessfully = true;
-                const mensagemErro = `<div class="alert alert-danger fw-bold" role="alert">🚫 <strong>Inscrições Encerradas!</strong> Infelizmente, atingimos o limite máximo de 100 convidados confirmados. Obrigado pelo interesse!</div>`;
+                const mensagemErro = `<div class="alert alert-danger fw-bold" role="alert">🚫 <strong>Inscrições Encerradas!</strong> Infelizmente, atingimos o limite máximo de 105 convidados confirmados. Obrigado pelo interesse!</div>`;
                 $resumoFormulario.html(mensagemErro).removeClass("d-none");
             } else {
                 // ❌ Outro erro qualquer (validação, rede, bad request, etc) - LIBERA BOTÃO para tentar novamente
