@@ -222,10 +222,27 @@ $(document).ready(function() {
                 url: 'https://eventos-hmlo.onrender.com/api/Convidado/verificar?nome=' + encodeURIComponent(nomeCapitalizado),
                 type: 'GET',
                 success: function(response) {
-                    if (response && response.existe) {
+                    const existeConvidado = response && response.existeComoConvidado;
+                    const existeAcompanhante = response && response.existeComoAcompanhante;
+
+                    if (existeConvidado || existeAcompanhante) {
+                        let tipoDuplicado, mensagemModal;
+
+                        if (existeConvidado && existeAcompanhante) {
+                            tipoDuplicado = 'ambos';
+                            mensagemModal = 'Este nome já está registrado como convidado e também como acompanhante de outro convidado. Caso precise de ajuda, entre em contato conosco.';
+                        } else if (existeConvidado) {
+                            tipoDuplicado = 'convidado';
+                            mensagemModal = 'Este nome já está registrado na lista de presença como convidado. Caso deseje atualizar seus dados, entre em contato conosco.';
+                        } else {
+                            tipoDuplicado = 'acompanhante';
+                            mensagemModal = 'Este nome já está registrado como acompanhante de outro convidado. Caso precise de esclarecimentos, entre em contato conosco.';
+                        }
+
+                        $('#modalNomeRegistrado .modal-body p').text(mensagemModal);
                         const modal = new bootstrap.Modal(document.getElementById('modalNomeRegistrado'));
                         modal.show();
-                        $inputNome.attr('data-duplicado', 'true');
+                        $inputNome.attr('data-duplicado', tipoDuplicado);
                     } else {
                         $inputNome.removeAttr('data-duplicado');
                     }
@@ -307,8 +324,17 @@ $(document).ready(function() {
         }
 
         // Verificar se o nome é duplicado
-        if ($inputNome.attr('data-duplicado') === 'true') {
-            $erroNome.text("Este nome já está registrado na lista. Caso precise de ajuda, entre em contato conosco.").removeClass("d-none").addClass("show");
+        const tipoDuplicado = $inputNome.attr('data-duplicado');
+        if (tipoDuplicado) {
+            let mensagemDuplicado;
+            if (tipoDuplicado === 'convidado') {
+                mensagemDuplicado = 'Este nome já está registrado como convidado. Caso precise de ajuda, entre em contato conosco.';
+            } else if (tipoDuplicado === 'acompanhante') {
+                mensagemDuplicado = 'Este nome já está registrado como acompanhante de outro convidado. Caso precise de ajuda, entre em contato conosco.';
+            } else {
+                mensagemDuplicado = 'Este nome já está registrado na lista de presença. Caso precise de ajuda, entre em contato conosco.';
+            }
+            $erroNome.text(mensagemDuplicado).removeClass("d-none").addClass("show");
             $btnSubmit.prop("disabled", false);
             return;
         }
