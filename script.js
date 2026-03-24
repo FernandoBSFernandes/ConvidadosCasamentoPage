@@ -389,7 +389,7 @@ $(document).ready(function() {
         if (temErro) {
             // É um erro da API - verificar se é limite de convidados
             const mensagemApi = response && typeof response.mensagem === 'string' ? response.mensagem.toLowerCase() : '';
-            const ehErroLimite = mensagemApi.includes('limite') || mensagemApi.includes('100') || mensagemApi.includes('lotado') || mensagemApi.includes('cheio') || mensagemApi.includes('máxim');
+            const ehErroLimite = mensagemApi.includes('limite') || mensagemApi.includes('100') || mensagemApi.includes('105') || mensagemApi.includes('lotado') || mensagemApi.includes('cheio') || mensagemApi.includes('máxim');
             
             if (ehErroLimite) {
                 // ❌ Erro de limite de convidados - BLOQUEIA PERMANENTEMENTE
