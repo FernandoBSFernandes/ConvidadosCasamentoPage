@@ -1,16 +1,13 @@
 $(document).ready(function() {
     // Verificar se o prazo de inscrições passou
     function verificarPrazoInscricoes() {
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-        
-        const prazoLimite = new Date(2026, 2, 26); // Mês é 0-indexed (2 = março, data limite: 26/03/2026)
-        prazoLimite.setHours(23, 59, 59, 999);
-        
-        if (hoje > prazoLimite) {
+        const agora = new Date();
+        // Prazo: 22/04/2026, 18:59
+        const prazoLimite = new Date(2026, 3, 22, 18, 59, 59, 999); // Mês 3 = abril
+        if (agora > prazoLimite) {
             // Prazo passou - travar form
             $form.find('input, textarea, select, button').prop('disabled', true);
-            $form.prepend('<div class="alert alert-danger fw-bold mb-4" role="alert">🚫 <strong>Inscrições Encerradas!</strong> O prazo para inscrições (26/03/2026) já passou. Obrigado a todos que se inscreveram!</div>');
+            $form.prepend('<div class="alert alert-danger fw-bold mb-4" role="alert">🚫 <strong>Inscrições Encerradas!</strong> O prazo para inscrições (22/04/2026, 18:59) já passou. Obrigado a todos que se inscreveram!</div>');
             return false;
         }
         return true;
@@ -139,7 +136,7 @@ $(document).ready(function() {
 
     // Função para atualizar a barra de progresso de vagas
     function atualizarBarraVagas(vagasRestantes, pessoasConfirmadas) {
-        const total = 100;
+        const total = 105;
         const preenchido = pessoasConfirmadas;
         const percentual = Math.min((preenchido / total) * 100, 100);
 
@@ -190,11 +187,12 @@ $(document).ready(function() {
 
     // Contagem regressiva de dias até o prazo
     function atualizarContagemDias() {
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-        const prazo = new Date(2026, 2, 26);
-        prazo.setHours(0, 0, 0, 0);
-        const diasRestantes = Math.round((prazo - hoje) / (1000 * 60 * 60 * 24));
+        const agora = new Date();
+        const prazo = new Date(2026, 3, 22, 18, 59, 59, 999); // 22/04/2026 18:59
+        // Calcula diferença em dias (arredondando para cima se ainda não passou da hora)
+        const diffMs = prazo - agora;
+        let diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
+        if (diffMs < 0) diasRestantes = -1;
         const $badge = $("#contagemDias");
 
         $badge.removeClass("bg-success bg-warning text-dark bg-danger");
