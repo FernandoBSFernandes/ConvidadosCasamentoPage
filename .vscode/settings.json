@@ -3,6 +3,10 @@
         "/^npx terser script\\.js -o script\\.min\\.js --compress --mangle$/": {
             "approve": true,
             "matchCommandLine": true
+        },
+        "/^npx cleancss -o style\\.min\\.css style\\.css ; git add -A ; git commit -m \"fix: corrigir hover do botao no mobile e adicionar feedback de :active\n\n- Restringiu \\.btn-primary:hover para @media \\(hover: hover\\) and \\(pointer: fine\\)\n  evitando que o translateY\\(-3px\\) dispare no toque mobile \\(onde hover e click\n  acontecem juntos, causando salto visual e dupla animacao\\)\n- Adicionado :active com translateY\\(1px\\) para feedback visual de pressionar\n  em todos os dispositivos \\(desktop e mobile\\)\n- Mesmo fix aplicado ao \\.btn-secondary\"$/": {
+            "approve": true,
+            "matchCommandLine": true
         }
     }
 }

@@ -138,12 +138,31 @@ html, body {
     transition: transform 0.3s ease, box-shadow 0.3s ease, background 0.3s ease;
 }
 
-.btn-primary:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
-    background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
-    color: white;
-    text-decoration: none;
+/* Hover apenas em dispositivos com mouse real — evita salto no toque mobile */
+@media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        background: linear-gradient(135deg, var(--secondary-color) 0%, var(--primary-color) 100%);
+        color: white;
+        text-decoration: none;
+    }
+
+    .btn-secondary:hover {
+        transform: translateY(-3px);
+    }
+}
+
+/* Feedback visual de pressionar — funciona em todos os dispositivos */
+.btn-primary:active {
+    transform: translateY(1px);
+    box-shadow: 0 2px 8px rgba(102, 126, 234, 0.3);
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+
+.btn-secondary:active {
+    transform: translateY(1px);
+    transition: transform 0.1s ease;
 }
 
 .btn-primary:focus {
@@ -154,10 +173,6 @@ html, body {
     font-weight: 600;
     letter-spacing: 0.5px;
     transition: transform 0.3s ease, box-shadow 0.3s ease;
-}
-
-.btn-secondary:hover {
-    transform: translateY(-3px);
 }
 
 /* ============================================
