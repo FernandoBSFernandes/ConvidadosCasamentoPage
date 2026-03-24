@@ -228,10 +228,7 @@ $(document).ready(function() {
                     if (existeConvidado || existeAcompanhante) {
                         let tipoDuplicado, mensagemModal;
 
-                        if (existeConvidado && existeAcompanhante) {
-                            tipoDuplicado = 'ambos';
-                            mensagemModal = 'Este nome já está registrado como convidado e também como acompanhante de outro convidado. Caso precise de ajuda, entre em contato conosco.';
-                        } else if (existeConvidado) {
+                        if (existeConvidado) {
                             tipoDuplicado = 'convidado';
                             mensagemModal = 'Este nome já está registrado na lista de presença como convidado. Caso deseje atualizar seus dados, entre em contato conosco.';
                         } else {
@@ -329,10 +326,8 @@ $(document).ready(function() {
             let mensagemDuplicado;
             if (tipoDuplicado === 'convidado') {
                 mensagemDuplicado = 'Este nome já está registrado como convidado. Caso precise de ajuda, entre em contato conosco.';
-            } else if (tipoDuplicado === 'acompanhante') {
-                mensagemDuplicado = 'Este nome já está registrado como acompanhante de outro convidado. Caso precise de ajuda, entre em contato conosco.';
             } else {
-                mensagemDuplicado = 'Este nome já está registrado na lista de presença. Caso precise de ajuda, entre em contato conosco.';
+                mensagemDuplicado = 'Este nome já está registrado como acompanhante de outro convidado. Caso precise de ajuda, entre em contato conosco.';
             }
             $erroNome.text(mensagemDuplicado).removeClass("d-none").addClass("show");
             $btnSubmit.prop("disabled", false);
