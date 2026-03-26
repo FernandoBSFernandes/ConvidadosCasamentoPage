@@ -1,0 +1,15 @@
+{
+  "name": "convidados-casamento-page",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "minify:js": "terser script/script.js -o script/script.min.js --compress --mangle",
+    "minify:css": "cleancss -o styles/style.min.css styles/style.css",
+    "minify": "npm run minify:js && npm run minify:css",
+    "build": "npm run minify"
+  },
+  "devDependencies": {
+    "clean-css-cli": "^5.6.3",
+    "terser": "^5.39.0"
+  }
+}
