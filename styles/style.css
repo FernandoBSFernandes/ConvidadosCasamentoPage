@@ -352,3 +352,14 @@ html, body {
         padding: 3rem !important;
     }
 }
+
+/* ============================================
+   BARRA DE VAGAS
+   ============================================ */
+.progress-vagas {
+    height: 14px;
+}
+
+#barraVagas {
+    width: 0%;
+}

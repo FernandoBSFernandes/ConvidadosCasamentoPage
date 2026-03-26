@@ -7,7 +7,7 @@ $(document).ready(function() {
         if (agora > prazoLimite) {
             // Prazo passou - travar form
             $form.find('input, textarea, select, button').prop('disabled', true);
-            $form.prepend('<div class="alert alert-danger fw-bold mb-4" role="alert">🚫 <strong>Inscrições Encerradas!</strong> O prazo para inscrições (22/04/2026, 18:59) já passou. Obrigado a todos que se inscreveram!</div>');
+            $("#alertaPrazoEncerrado").removeClass("d-none");
             return false;
         }
         return true;
@@ -115,12 +115,13 @@ $(document).ready(function() {
             $containerNomesAcompanhantes.empty();
             for (let i = 1; i <= quantity; i++) {
                 const ordinal = getOrdinal(i);
-                $containerNomesAcompanhantes.append(
-                    `<div class="companion-input-group">
-                        <label for="companionName${i}">Insira o nome do ${ordinal} acompanhante</label>
-                        <input type="text" class="form-control companion-name-input" id="companionName${i}" name="companionName${i}" placeholder="Digite o nome do acompanhante" maxlength="50" required>
-                    </div>`
-                );
+                const tmpl = document.getElementById("templateAcompanhante");
+                const clone = tmpl.content.cloneNode(true);
+                clone.querySelector("label").setAttribute("for", "companionName" + i);
+                clone.querySelector("label").textContent = "Insira o nome do " + ordinal + " acompanhante";
+                clone.querySelector("input").setAttribute("id", "companionName" + i);
+                clone.querySelector("input").setAttribute("name", "companionName" + i);
+                $containerNomesAcompanhantes.append(clone);
                 $("#companionName" + i).on("keypress", preventNumbers);
             }
             $containerNomesAcompanhantes.removeClass("d-none");
@@ -209,6 +210,13 @@ $(document).ready(function() {
         }
     }
     atualizarContagemDias();
+
+    // Inicializar botão de adicionar ao calendário
+    new bootstrap.Tooltip(document.getElementById('btnBaixarCalendario'));
+    $("#btnBaixarCalendario").on("click", function(e) {
+        e.preventDefault();
+        gerarArquivoIcs();
+    });
     
     $inputNome.on("keypress", preventNumbers);
 
@@ -434,20 +442,10 @@ $(document).ready(function() {
         
         resumoHTML = mensagemPersonalizada;
         
-        // Adicionar botão de download do calendário se foi para o evento
-        if (iraAoEvento === "sim") {
-            resumoHTML += `<div class="mt-4 text-center"><a href="#" class="btn btn-outline-primary btn-sm" id="btnBaixarCalendario" data-bs-toggle="tooltip" data-bs-title="Clique aqui pra adicionar nossa recepção ao seu calendario do telefone." title="Clique aqui pra adicionar nossa recepção ao seu calendario do telefone.">📅 Adicionar ao Calendário</a></div>`;
-        }
-        
         $resumoFormulario.html(resumoHTML).removeClass("d-none");
         
-        // Adicionar evento ao botão de download
-        if ($("#btnBaixarCalendario").length) {
-            const tooltip = new bootstrap.Tooltip(document.getElementById('btnBaixarCalendario'));
-            $("#btnBaixarCalendario").on("click", function(e) {
-                e.preventDefault();
-                gerarArquivoIcs();
-            });
+        if (iraAoEvento === "sim") {
+            $("#secaoCalendario").removeClass("d-none");
         }
     }
 
@@ -505,6 +503,7 @@ END:VCALENDAR`;
             $secaoParticipacao.addClass("d-none").removeClass("show");
             $secaoDetalhesAcompanhamento.addClass("d-none");
             $containerNomesAcompanhantes.empty().addClass("d-none");
+            $("#secaoCalendario").addClass("d-none");
             $btnSubmit.prop("disabled", false);
             formSubmitedSuccessfully = false;
             $inputNome.removeAttr('data-duplicado');

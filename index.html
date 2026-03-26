@@ -7,7 +7,9 @@
     <meta name="description" content="Confirme sua presença na recepção de casamento de Suzana e Fernando">
     <title>Lista de Presença - Recepção de Casamento de Suzana e Fernando</title>
     <!-- Favicon com emoji de pizza -->
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🍕</text></svg>" type="image/svg+xml">
+    <link rel="icon"
+        href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🍕</text></svg>"
+        type="image/svg+xml">
     <!-- Preconnect para melhorar performance de CDNs -->
     <link rel="preconnect" href="https://cdn.jsdelivr.net">
     <link rel="dns-prefetch" href="https://eventos-hmlo.onrender.com">
@@ -83,7 +85,9 @@
                                 </ul>
                                 <small class="d-block mt-2 fw-bold text-dark">⚠️ O pagamento será realizado na entrada
                                     do local.</small>
-                                <small class="d-block mt-2 text-muted"><strong>📋 Para bariátricos:</strong> é necessário apresentar documento com foto e carteirinha de bariátrico no momento do pagamento.</small>
+                                <small class="d-block mt-2 text-muted"><strong>📋 Para bariátricos:</strong> é
+                                    necessário apresentar documento com foto e carteirinha de bariátrico no momento do
+                                    pagamento.</small>
                                 </p>
 
                                 <p>
@@ -93,7 +97,7 @@
                                     <li>�📱 Pix</li>
                                     <li>🏧 Cartão de Débito</li>
                                     <li>💳 Cartão de Crédito</li>
-                                     <li>🎫 Vales Refeição: Sodexo (atual Pluxee), Alelo, Ticket Restaurante e Vale</li>
+                                    <li>🎫 Vales Refeição: Sodexo (atual Pluxee), Alelo, Ticket Restaurante e Vale</li>
                                 </ul>
                                 </p>
 
@@ -108,7 +112,8 @@
                                 </p>
 
                                 <div class="alert alert-primary border-2 border-primary mt-3 mb-0" role="alert">
-                                    <strong>🚨 Inscrições prorrogadas!</strong> O prazo final agora é <strong>22/04/2026, 18:59</strong>
+                                    <strong>🚨 Inscrições prorrogadas!</strong> O prazo final agora é
+                                    <strong>22/04/2026, 18:59</strong>
                                     e o limite foi ampliado para <strong>105 pessoas</strong>.
                                 </div>
 
@@ -117,14 +122,18 @@
                                         <h5 class="alert-heading fw-bold mb-2">⏰ Atenção: Prazo de Inscrição!</h5>
                                         <span id="contagemDias" class="badge fs-6 px-3 py-2"></span>
                                     </div>
-                                    <p class="mb-0">As inscrições serão aceitas <strong>até 22/04/2026, 18:59</strong> ou até <strong>completarmos 105 pessoas</strong>, o que ocorrer primeiro. Não perca o prazo!</p>
+                                    <p class="mb-0">As inscrições serão aceitas <strong>até 22/04/2026, 18:59</strong>
+                                        ou até <strong>completarmos 105 pessoas</strong>, o que ocorrer primeiro. Não
+                                        perca o prazo!</p>
                                     <div class="mt-3" id="secaoVagas">
                                         <div class="d-flex justify-content-between align-items-center mb-1">
                                             <small class="fw-bold" id="textoVagas">Carregando vagas...</small>
                                             <small id="textoContagem" class="text-muted"></small>
                                         </div>
-                                        <div class="progress" style="height: 14px;" role="progressbar" aria-label="Vagas preenchidas">
-                                            <div class="progress-bar progress-bar-striped progress-bar-animated" id="barraVagas" style="width: 0%"></div>
+                                        <div class="progress progress-vagas" role="progressbar"
+                                            aria-label="Vagas preenchidas">
+                                            <div class="progress-bar progress-bar-striped progress-bar-animated"
+                                                id="barraVagas"></div>
                                         </div>
                                     </div>
                                 </div>
@@ -135,6 +144,11 @@
                                 nome de todas as pessoas que estarão presentes.
                             </p>
                         </section>
+
+                        <!-- Alerta de Prazo Encerrado (controlado pelo JS) -->
+                        <div id="alertaPrazoEncerrado" class="alert alert-danger fw-bold mb-4 d-none" role="alert">
+                            🚫 <strong>Inscrições Encerradas!</strong> O prazo para inscrições (22/04/2026, 18:59) já passou. Obrigado a todos que se inscreveram!
+                        </div>
 
                         <form id="formularioEvento" novalidate>
                             <!-- Campo de Nome -->
@@ -240,6 +254,16 @@
                             <div id="resumoFormulario" class="card bg-light border-0 d-none">
                                 <div class="card-body"></div>
                             </div>
+
+                            <!-- Seção do Botão de Calendário (exibida após cadastro com "sim") -->
+                            <div id="secaoCalendario" class="mt-4 text-center d-none">
+                                <a href="#" class="btn btn-outline-primary btn-sm" id="btnBaixarCalendario"
+                                    data-bs-toggle="tooltip"
+                                    data-bs-title="Clique aqui pra adicionar nossa recepção ao seu calendario do telefone."
+                                    title="Clique aqui pra adicionar nossa recepção ao seu calendario do telefone.">
+                                    📅 Adicionar ao Calendário
+                                </a>
+                            </div>
                         </form>
                     </div>
                 </article>
@@ -268,11 +292,20 @@
         </div>
     </div>
 
+    <!-- Template para campo de nome de acompanhante -->
+    <template id="templateAcompanhante">
+        <div class="companion-input-group">
+            <label></label>
+            <input type="text" class="form-control companion-name-input" placeholder="Digite o nome do acompanhante" maxlength="50" required>
+        </div>
+    </template>
+
     <!-- jQuery -->
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Bootstrap 5 JS -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom Script com defer para não bloquear página -->\n    <script src="script/script.min.js" defer></script>
+    <!-- Custom Script com defer para não bloquear página -->\n
+    <script src="script/script.min.js" defer></script>
 </body>
 
 </html>
