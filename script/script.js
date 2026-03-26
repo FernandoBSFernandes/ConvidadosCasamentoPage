@@ -189,26 +189,39 @@ $(document).ready(function() {
     function atualizarContagemDias() {
         const agora = new Date();
         const prazo = new Date(2026, 3, 22, 18, 59, 59, 999); // 22/04/2026 18:59
-        // Calcula diferença em dias (arredondando para cima se ainda não passou da hora)
         const diffMs = prazo - agora;
-        let diasRestantes = Math.ceil(diffMs / (1000 * 60 * 60 * 24));
-        if (diffMs < 0) diasRestantes = -1;
         const $badge = $("#contagemDias");
-
         $badge.removeClass("bg-success bg-warning text-dark bg-danger");
-        if (diasRestantes > 10) {
-            $badge.addClass("bg-success").text("📅 " + diasRestantes + " dias restantes");
-        } else if (diasRestantes >= 5) {
-            $badge.addClass("bg-warning text-dark").text("⚠️ " + diasRestantes + " dias restantes");
-        } else if (diasRestantes > 0) {
-            $badge.addClass("bg-danger").text("🔥 Últimos " + diasRestantes + " dias!");
-        } else if (diasRestantes === 0) {
-            $badge.addClass("bg-danger").text("⚡ Último dia!");
-        } else {
+
+        if (diffMs < 0) {
             $badge.addClass("bg-danger").text("🚫 Prazo encerrado");
+            return;
+        }
+
+        const totalMinutos = Math.floor(diffMs / 60000);
+        const totalHoras   = Math.floor(diffMs / 3600000);
+        const dias         = Math.floor(diffMs / 86400000);
+        const horas        = Math.floor((diffMs % 86400000) / 3600000);
+        const minutos      = Math.floor((diffMs % 3600000) / 60000);
+
+        if (dias > 2) {
+            // Mais de 2 dias: exibe só os dias
+            $badge.addClass(dias > 10 ? "bg-success" : dias >= 5 ? "bg-warning text-dark" : "bg-danger")
+                  .text("📅 " + dias + " dias restantes");
+        } else if (totalHoras >= 24) {
+            // 1–2 dias: exibe dias + horas
+            const dLabel = dias === 1 ? "1 dia" : dias + " dias";
+            $badge.addClass("bg-danger").text("⚠️ " + dLabel + " e " + horas + "h restantes");
+        } else if (totalMinutos >= 60) {
+            // Menos de 1 dia: exibe horas + minutos
+            $badge.addClass("bg-danger").text("🔥 " + totalHoras + "h " + minutos + "min restantes");
+        } else {
+            // Menos de 1 hora: exibe só minutos
+            $badge.addClass("bg-danger").text("⚡ " + totalMinutos + " minuto" + (totalMinutos !== 1 ? "s" : "") + " restantes");
         }
     }
     atualizarContagemDias();
+    setInterval(atualizarContagemDias, 60000); // Atualiza a cada minuto
 
     // Inicializar botão de adicionar ao calendário
     new bootstrap.Tooltip(document.getElementById('btnBaixarCalendario'));
