@@ -404,7 +404,6 @@ $(document).ready(function() {
                 // ❌ Erro de limite de convidados - BLOQUEIA PERMANENTEMENTE
                 $btnSubmit.prop("disabled", true);
                 formSubmitedSuccessfully = true;
-                clearInterval(pollingVagas); // Para o polling de vagas após sucesso
                 const mensagemErro = `<div class="alert alert-danger fw-bold" role="alert">🚫 <strong>Inscrições Encerradas!</strong> Infelizmente, atingimos o limite máximo de 105 convidados confirmados. Obrigado pelo interesse!</div>`;
                 $resumoFormulario.html(mensagemErro).removeClass("d-none");
             } else {
@@ -425,7 +424,6 @@ $(document).ready(function() {
         // ✅ SUCESSO - BLOQUEIA PERMANENTEMENTE o botão
         $btnSubmit.prop("disabled", true);
         formSubmitedSuccessfully = true;
-        clearInterval(pollingVagas); // Para o polling de vagas após sucesso
         
         // Mostra mensagem de sucesso
         $mensagemSucesso.removeClass("d-none").addClass("show");
