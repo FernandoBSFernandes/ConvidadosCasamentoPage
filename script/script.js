@@ -24,7 +24,6 @@ $(document).ready(function() {
     const $mensagemSucesso = $("#mensagemSucesso");
     const $resumoFormulario = $("#resumoFormulario");
     const $inputNome = $("#inputNome");
-    const $checkboxSozinho = $("#checkboxSozinho");
     const $checkboxAcompanhado = $("#checkboxAcompanhado");
     const $secaoDetalhesAcompanhamento = $("#secaoDetalhesAcompanhamento");
     const $inputQuantidadeAcompanhantes = $("#inputQuantidadeAcompanhantes");
@@ -184,7 +183,7 @@ $(document).ready(function() {
     // Eventos
     verificarPrazoInscricoes(); // Verificar prazo antes de qualquer coisa
     buscarVagasRestantes(); // Carregar vagas ao inicializar
-    const pollingVagas = setInterval(buscarVagasRestantes, 30000); // Polling a cada 30 segundos
+    setInterval(buscarVagasRestantes, 30000); // Polling a cada 30 segundos
 
     // Contagem regressiva de dias até o prazo
     function atualizarContagemDias() {
