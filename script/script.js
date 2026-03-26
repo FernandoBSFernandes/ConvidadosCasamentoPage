@@ -184,7 +184,7 @@ $(document).ready(function() {
     // Eventos
     verificarPrazoInscricoes(); // Verificar prazo antes de qualquer coisa
     buscarVagasRestantes(); // Carregar vagas ao inicializar
-    const pollingVagas = setInterval(buscarVagasRestantes, 60000); // Polling a cada 60 segundos
+    const pollingVagas = setInterval(buscarVagasRestantes, 30000); // Polling a cada 30 segundos
 
     // Contagem regressiva de dias até o prazo
     function atualizarContagemDias() {
