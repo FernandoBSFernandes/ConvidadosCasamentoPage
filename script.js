@@ -137,7 +137,7 @@ $(document).ready(function() {
     // Função para atualizar a barra de progresso de vagas
     function atualizarBarraVagas(vagasRestantes, pessoasConfirmadas) {
         const total = 105;
-        const preenchido = pessoasConfirmadas;
+        const preenchido = typeof pessoasConfirmadas === 'number' ? pessoasConfirmadas : total - vagasRestantes;
         const percentual = Math.min((preenchido / total) * 100, 100);
 
         const $barra = $("#barraVagas");
