@@ -11,7 +11,8 @@
         href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='75' font-size='75'>🍕</text></svg>"
         type="image/svg+xml">
     <!-- Preconnect para melhorar performance de CDNs -->
-    <link rel="preconnect" href="https://cdn.jsdelivr.net">
+    <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
+    <link rel="preconnect" href="https://code.jquery.com" crossorigin>
     <link rel="dns-prefetch" href="https://eventos-hmlo.onrender.com">
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
@@ -37,7 +38,7 @@
                         <header>
                             <div class="mb-4 imagem-capa">
                                 <img src="img/690d410d-1d5b-47c4-a40f-bcc30715920a.JPEG" alt="Foto do casal"
-                                    class="w-100" loading="lazy">
+                                    class="w-100" loading="eager" fetchpriority="high">
                             </div>
                             <h1 class="card-title text-center mb-4 text-primary fw-bold">Lista de Presença - Recepção de
                                 Casamento de Suzana e Fernando</h1>
@@ -301,10 +302,10 @@
     </template>
 
     <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js" defer></script>
     <!-- Bootstrap 5 JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Custom Script com defer para não bloquear página -->\n
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js" defer></script>
+    <!-- Custom Script -->
     <script src="script/script.min.js" defer></script>
 </body>
 
