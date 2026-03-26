@@ -184,7 +184,7 @@ $(document).ready(function() {
     // Eventos
     verificarPrazoInscricoes(); // Verificar prazo antes de qualquer coisa
     buscarVagasRestantes(); // Carregar vagas ao inicializar
-    setInterval(buscarVagasRestantes, 60000); // Polling a cada 60 segundos
+    const pollingVagas = setInterval(buscarVagasRestantes, 60000); // Polling a cada 60 segundos
 
     // Contagem regressiva de dias até o prazo
     function atualizarContagemDias() {
@@ -217,7 +217,9 @@ $(document).ready(function() {
         e.preventDefault();
         gerarArquivoIcs();
     });
-    
+
+    const $modalNome = new bootstrap.Modal(document.getElementById('modalNomeRegistrado'));
+
     $inputNome.on("keypress", preventNumbers);
 
     // Verificar se o convidado já existe quando sair do campo de nome
@@ -245,8 +247,7 @@ $(document).ready(function() {
                         }
 
                         $('#modalNomeRegistrado .modal-body p').text(mensagemModal);
-                        const modal = new bootstrap.Modal(document.getElementById('modalNomeRegistrado'));
-                        modal.show();
+                        $modalNome.show();
                         $inputNome.attr('data-duplicado', tipoDuplicado);
                     } else {
                         $inputNome.removeAttr('data-duplicado');
@@ -403,6 +404,7 @@ $(document).ready(function() {
                 // ❌ Erro de limite de convidados - BLOQUEIA PERMANENTEMENTE
                 $btnSubmit.prop("disabled", true);
                 formSubmitedSuccessfully = true;
+                clearInterval(pollingVagas); // Para o polling de vagas após sucesso
                 const mensagemErro = `<div class="alert alert-danger fw-bold" role="alert">🚫 <strong>Inscrições Encerradas!</strong> Infelizmente, atingimos o limite máximo de 105 convidados confirmados. Obrigado pelo interesse!</div>`;
                 $resumoFormulario.html(mensagemErro).removeClass("d-none");
             } else {
@@ -423,6 +425,7 @@ $(document).ready(function() {
         // ✅ SUCESSO - BLOQUEIA PERMANENTEMENTE o botão
         $btnSubmit.prop("disabled", true);
         formSubmitedSuccessfully = true;
+        clearInterval(pollingVagas); // Para o polling de vagas após sucesso
         
         // Mostra mensagem de sucesso
         $mensagemSucesso.removeClass("d-none").addClass("show");
