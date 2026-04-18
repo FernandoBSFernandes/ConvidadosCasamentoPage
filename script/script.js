@@ -191,6 +191,8 @@ $(document).ready(function() {
             success: function(response) {
                 if (response && typeof response.limiteMaximoPessoas === 'number') {
                     limiteMaximoPessoas = response.limiteMaximoPessoas;
+                    $("#textoLimiteAlerta").text(limiteMaximoPessoas + " pessoas");
+                    $("#textoLimitePrazo").text("completarmos " + limiteMaximoPessoas + " pessoas");
                 }
             },
             complete: function() {
