@@ -13,6 +13,9 @@ $(document).ready(function() {
         return true;
     }
     
+    // Limite máximo de pessoas (carregado da API, fallback 105)
+    let limiteMaximoPessoas = 105;
+
     // Cache de elementos
     const $form = $("#formularioEvento");
     const $btnSubmit = $('button[type="submit"]');
@@ -136,7 +139,7 @@ $(document).ready(function() {
 
     // Função para atualizar a barra de progresso de vagas
     function atualizarBarraVagas(vagasRestantes, pessoasConfirmadas) {
-        const total = 105;
+        const total = limiteMaximoPessoas;
         const preenchido = typeof pessoasConfirmadas === 'number' ? pessoasConfirmadas : total - vagasRestantes;
         const percentual = Math.min((preenchido / total) * 100, 100);
 
@@ -180,9 +183,26 @@ $(document).ready(function() {
         });
     }
 
+    // Carrega o limite máximo da API e inicializa o restante
+    function carregarLimiteMaximo() {
+        $.ajax({
+            url: 'https://eventos-hmlo.onrender.com/api/Convidado/limite-maximo-pessoas',
+            type: 'GET',
+            success: function(response) {
+                if (response && typeof response.limiteMaximoPessoas === 'number') {
+                    limiteMaximoPessoas = response.limiteMaximoPessoas;
+                }
+            },
+            complete: function() {
+                // Independente de sucesso ou erro, continua com o fallback
+                buscarVagasRestantes();
+            }
+        });
+    }
+
     // Eventos
     verificarPrazoInscricoes(); // Verificar prazo antes de qualquer coisa
-    buscarVagasRestantes(); // Carregar vagas ao inicializar
+    carregarLimiteMaximo(); // Carrega limite da API e em seguida busca vagas
     setInterval(buscarVagasRestantes, 30000); // Polling a cada 30 segundos
 
     // Contagem regressiva de dias até o prazo
@@ -416,7 +436,7 @@ $(document).ready(function() {
                 // ❌ Erro de limite de convidados - BLOQUEIA PERMANENTEMENTE
                 $btnSubmit.prop("disabled", true);
                 formSubmitedSuccessfully = true;
-                const mensagemErro = `<div class="alert alert-danger fw-bold" role="alert">🚫 <strong>Inscrições Encerradas!</strong> Infelizmente, atingimos o limite máximo de 105 convidados confirmados. Obrigado pelo interesse!</div>`;
+                const mensagemErro = `<div class="alert alert-danger fw-bold" role="alert">🚫 <strong>Inscrições Encerradas!</strong> Infelizmente, atingimos o limite máximo de ${limiteMaximoPessoas} convidados confirmados. Obrigado pelo interesse!</div>`;
                 $resumoFormulario.html(mensagemErro).removeClass("d-none");
             } else {
                 // ❌ Outro erro qualquer (validação, rede, bad request, etc) - LIBERA BOTÃO para tentar novamente
